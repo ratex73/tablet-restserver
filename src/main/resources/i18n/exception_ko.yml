@@ -1,0 +1,33 @@
+unKnown:
+  code: "9999"
+  msg: "알수 없는 오류가 발생하였습니다."
+userNotFound:
+  code: "1000"
+  msg: "존재하지 않는 회원입니다."
+useridSigninFailed:
+  code: "1001"
+  msg: "계정이 존재하지 않거나 또는 비밀번호가 정확하지 않습니다."
+entryPointException:
+  code: "1002"
+  msg: "해당 리소스에 접근하기 위한 권한이 없습니다."
+accessDenied:
+  code: "1003"
+  msg: "보유한 권한으로 접근할수 없는 리소스 입니다."
+communicationError:
+  code: "1004"
+  msg: "통신 중 오류가 발생하였습니다."
+existingUser:
+  code: "1005"
+  msg: "파일 개수가 맞지 않습니다."
+tokenExpired:
+  code: "1006"
+  msg: "토큰이 만료되었습니다. 다시 로그인 해주세요."
+fileNotExist:
+  code: "1007"
+  msg: "파일이 존재하지 않습니다."
+maxCountOver:
+  code: "1008"
+  msg: "최대 수량과 일치하지않습니다."
+existingNewCarallocation:
+  code: "1009"
+  msg: "해당 의전건에 대하여 신규 배차가 등록되었습니다."

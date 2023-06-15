@@ -1,0 +1,16 @@
+spring:
+  profiles:
+    active: local # 디폴트 환경
+  messages:
+    basename: i18n/exception
+    encoding: UTF-8
+  jwt:
+    secret: govlepel@$&
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100MB
+      max-request-size: 100MB
+  http:
+    multipart:
+      enabled: true

@@ -1,0 +1,37 @@
+spring:
+  profiles: production
+  datasource:
+    url: jdbc:oracle:thin:@//10.10.200.107:1521/TKLDB
+    username: TK_ITSM
+    password: tkl2009_itsm
+    driverClassName: oracle.jdbc.driver.OracleDriver
+    testWhileIdle: true
+    validationQuery: SELECT 1
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        use_sql_comments: true
+        dialect: org.hibernate.dialect.Oracle10gDialect
+    hibernate:
+      ddl-auto: validate
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl
+        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+file:
+  upload-dir: /usr/local/src/tablet-restserver/uploads
+
+sms:
+  msgkey: "R"
+  telno :
+
+send:
+  url: "https://mfs.yedaham.co.kr/v1/downloadFile/"
+  funMessageUrl : "https://www.yedaham.co.kr/mobile/bugo/mms_index.do"
+
+rsa:
+  publicKey: MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCkZiPqCecVeSHqlnkUM9qibqqqtrzeO6OcYn9tAf2qLEzW5yzTwSlCXYN6jQsm7k8CiX/2yiTAPOfKz5K0OjIMc+GjLFHbbbwcqmH1RyQopQtB3wO/nrbksZxi0gIwODYWGnM4YLgDxMNWr0BzXN+xlZo85yCSUy0h4tMBnXFHlQIDAQAB
+  privateKey: MIICeAIBADANBgkqhkiG9w0BAQEFAASCAmIwggJeAgEAAoGBAKRmI+oJ5xV5IeqWeRQz2qJuqqq2vN47o5xif20B/aosTNbnLNPBKUJdg3qNCybuTwKJf/bKJMA858rPkrQ6Mgxz4aMsUdttvByqYfVHJCilC0HfA7+etuSxnGLSAjA4NhYaczhguAPEw1avQHNc37GVmjznIJJTLSHi0wGdcUeVAgMBAAECgYEAkzxjN+2Mh7/IL3h6kixqyIVC1sf42TQisSHKLA/XZrxsSSAcFr5tvGFSKsT9Uu2l14jcEWQzi/RASHSlWEKypNqddFbYE+EF40Xrsc7B1RH5Xrb3txbEEWtP4FQAp9/9WJYU65gZhgSkadwpU/0v9gQS69k9tKFENLzwsfnvnCECQQD958qBBvZGOmPs1q9yHh2fBWKsLXhMJEQrgzqgoc9AENCjp81rYCOb/ZvNCX6WD4UodekzulqCDSrPwNyXaJ1pAkEApcFTU73jWSRXCeJQCl3fN5gbSk8UZA/S7scvAZDB5atPzak2NKDor3IhYIlumcJAKp2icFNEi0D9mUTWy/mXTQJBAJMD8npRSKoTRyasjDvcejRIjwC4903HNf2n53t5FaK32cbY85V3vkalSuAm3jgPVn+9/kCoZ52j+CUBO/kjZvkCQDIUlDGUCNHRGf8hgp9vN1cbvPsZo4aMBWYhhkFJ1FupA+aWfosuJr+DkzQQsfsA5tQ5Zm/bqLUOQNEDLIbadW0CQQCYlmALdQBzBPnaW/H96OCDgbPUPDVAzt+VLM8giOj3wYuFznOdcQ0/nukKVCe+Y1Zk7UY0CVEaGAGzv283M4w+
+
+hosturl:
+  fsservice: http://10.10.200.100:9087
