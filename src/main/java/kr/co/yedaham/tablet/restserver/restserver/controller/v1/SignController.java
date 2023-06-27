@@ -62,16 +62,22 @@ public class SignController {
         }
 
         RSAUtil rsaUtil = new RSAUtil();
+        System.out.println("##################### publickey : " + publicKey );
+        System.out.println("##################### yedaham1@ : " + RSAUtil.encryptRSA("yedaham1@", rsaUtil.getPublicKeyFromBase64Encrypted(publicKey) ) );
+
         PrivateKey privateKeyFromBase64Encrypted = rsaUtil.getPrivateKeyFromBase64Encrypted(privateKey);
         String decryptedPassword = RSAUtil.decryptRSA(request.getPassword(), privateKeyFromBase64Encrypted);
 
-
         User user = userJpaRepo.findByUserid(request.getId()).orElseThrow(CUseridSigninFailedException::new);
+
+        System.out.println("##################### decryptedPassword : " + decryptedPassword );
+        System.out.println("##################### encryptSha64(decryptedPassword) : " + encryptSha64(decryptedPassword) );
+        System.out.println("##################### user.getPassword() : " + user.getPassword() );
 
         if (!encryptSha64(decryptedPassword).equals(user.getPassword()))
             throw new CUseridSigninFailedException();
 
-         slackSenderManager.send(CH_BOT,  request.getId()+ "님이 태블릿에 접근하였습니다. (디바이스정보) " + deviceId + " (디바이스버전) " + deviceAppVersion);
+         //slackSenderManager.send(CH_BOT,  request.getId()+ "님이 태블릿에 접근하였습니다. (디바이스정보) " + deviceId + " (디바이스버전) " + deviceAppVersion);
        return responseService.getSingleResult(jwtTokenProvider.createToken(String.valueOf(user.getUserid()), user.getRoles()));
     }
 
