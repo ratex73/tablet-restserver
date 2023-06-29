@@ -3,8 +3,6 @@ package kr.co.yedaham.tablet.restserver.restserver.entity;
 
 import kr.co.yedaham.tablet.restserver.restserver.model.file.FileSiginRequest;
 import kr.co.yedaham.tablet.restserver.restserver.model.file.FileSignin;
-import kr.co.yedaham.tablet.restserver.restserver.model.funmessage.FunMessageInfo;
-import kr.co.yedaham.tablet.restserver.restserver.model.mourning.MourningId;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
