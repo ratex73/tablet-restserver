@@ -2,6 +2,7 @@ package kr.co.yedaham.tablet.restserver.restserver.service.funCalc;
 
 import kr.co.yedaham.tablet.restserver.restserver.model.fun.FunList;
 import kr.co.yedaham.tablet.restserver.restserver.model.funCalc.*;
+import kr.co.yedaham.tablet.restserver.restserver.model.response.CommonResult;
 
 import java.util.List;
 
@@ -11,5 +12,5 @@ public interface FunCalcService {
     public boolean saveFunCalc(List<FunItemInfo> funItemInfo);
 
     //의전물품 및 정산저장
-    public boolean saveFunItemCalc(FunItemCalcDto funItemCalcDto);
+    public CommonResult saveFunItemCalc(FunItemCalcDto funItemCalcDto);
 }

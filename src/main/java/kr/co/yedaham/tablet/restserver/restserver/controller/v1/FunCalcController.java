@@ -5,9 +5,6 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import kr.co.yedaham.tablet.restserver.restserver.config.security.JwtTokenProvider;
-import kr.co.yedaham.tablet.restserver.restserver.model.file.FileSiginRequest;
-import kr.co.yedaham.tablet.restserver.restserver.model.fun.*;
-import kr.co.yedaham.tablet.restserver.restserver.model.funCalc.FunCalcRequest;
 import kr.co.yedaham.tablet.restserver.restserver.model.funCalc.FunItemCalcDto;
 import kr.co.yedaham.tablet.restserver.restserver.model.funCalc.FunItemInfo;
 import kr.co.yedaham.tablet.restserver.restserver.model.response.CommonResult;
@@ -20,7 +17,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Api(tags = {"18. FunCalc"})
@@ -41,9 +37,9 @@ public class FunCalcController {
     @ApiOperation(value = "의전물품 저장", notes = "의전물품 저장")
     @PostMapping(value = "/funCalc/saveFunItem")
     public CommonResult funCalcSave(@RequestBody List<FunItemInfo> funItemInfoList) throws Exception {
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        System.out.println("##################" + funItemInfoList.toString());
         return responseService.getSingleResult(funCalcService.saveFunCalc(funItemInfoList));
     }
 
@@ -51,11 +47,47 @@ public class FunCalcController {
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")
     })
     @ApiOperation(value = "의전물품 및 결산 저장", notes = "의전물품 및 정산금액 저장")
-    @PostMapping(value = "/funCalc/saveFumItemlCalc")
+    @PostMapping(value = "/funCalc/saveFunItemlCalc")
     public CommonResult funItemCalcSave(@RequestBody FunItemCalcDto funItemCalcDto) throws Exception {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        System.out.println("##################" + funItemCalcDto.toString());
+        CommonResult commResult;
+
+        try {
+            System.out.println("######## Start funItemCalcSave ########");
+            System.out.println("##################" + funItemCalcDto.toString());
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            commResult = funCalcService.saveFunItemCalc(funItemCalcDto);
+
+        } catch(Exception e) {
+            //e.printStackTrace();
+            System.out.println("######## Error funItemCalcSave ########");
+            System.out.println(e.getMessage());
+            throw e;
+        }
+
+        return commResult;
+    }
+
+    @ApiOperation(value = "의전물품 및 결산 저장", notes = "의전물품 및 정산금액 저장")
+    @PostMapping(value = "/funCalc/saveFunItemlCalc2")
+    public CommonResult funItemCalcSave2(@RequestBody FunItemCalcDto funItemCalcDto) throws Exception {
+
+        try {
+            System.out.println("######## Start funItemCalcSave ########");
+            System.out.println("##################" + funItemCalcDto.toString());
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        } catch(Exception e) {
+            //e.printStackTrace();
+            System.out.println("######## Error funItemCalcSave ########");
+            System.out.println(e.getMessage());
+            throw e;
+        }
+
         return responseService.getSingleResult(funCalcService.saveFunItemCalc(funItemCalcDto));
     }
 }
+

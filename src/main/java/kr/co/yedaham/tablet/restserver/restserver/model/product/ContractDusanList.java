@@ -22,4 +22,8 @@ public class ContractDusanList {
     private String cd;
     private String cdnm;
     private String upsellyn;
+    private String state;
+    private String creatYn;
+    private String fu04Qty;
+    private String fu04Amt;
 }

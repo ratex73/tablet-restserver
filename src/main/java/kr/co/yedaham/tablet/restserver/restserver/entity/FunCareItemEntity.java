@@ -7,6 +7,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@DynamicUpdate
 @Data
 @Entity
 @NoArgsConstructor
@@ -47,7 +48,7 @@ public class FunCareItemEntity {
     private String updateId;
 
     @Builder
-    public void FunCareItemEntity(FunCareItemInfo funCareItemInfo) {
+    public FunCareItemEntity(FunCareItemInfo funCareItemInfo) {
         seq = funCareItemInfo.getSeq();
         funCtrlNo = funCareItemInfo.getFunCtrlNo();
         cSeq = funCareItemInfo.getCSeq();
