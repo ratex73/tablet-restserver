@@ -16,7 +16,7 @@ public class FunItemId implements Serializable {
     private String funCtrlNo;
 
     @Column(name="FUN_BAL_CNT")
-    private int funBalCnt;
+    private Integer  funBalCnt;
 
     @Column(name="MAIN_GB")
     private String mainGb;

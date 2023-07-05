@@ -25,9 +25,9 @@ public class FunItemEntity {
     @Column(name = "GRP_CD")
     private String grpCd;
 
-    private int qty;
+    private Integer  qty;
 
-    private int amt;
+    private Integer  amt;
 
     @Column(name = "CREAT_YN")
     private String creatYn;

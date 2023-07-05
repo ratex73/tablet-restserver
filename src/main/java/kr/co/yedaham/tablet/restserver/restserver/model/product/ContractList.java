@@ -24,4 +24,8 @@ public class ContractList {
     private String init;
     private String upsellyn;
     private String assiProdCd;
+    private String state;
+    private String creatYn;
+    private String fu04Qty;
+    private String fu04Amt;
 }

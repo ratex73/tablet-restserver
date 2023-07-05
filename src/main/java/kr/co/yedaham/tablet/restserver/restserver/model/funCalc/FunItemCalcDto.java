@@ -1,6 +1,5 @@
 package kr.co.yedaham.tablet.restserver.restserver.model.funCalc;
 
-import kr.co.yedaham.tablet.restserver.restserver.model.fun.FunItem;
 import lombok.*;
 
 import java.util.List;

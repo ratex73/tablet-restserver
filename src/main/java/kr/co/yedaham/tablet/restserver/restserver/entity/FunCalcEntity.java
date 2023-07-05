@@ -24,40 +24,40 @@ public class FunCalcEntity {
     private FunCalcId funCalcId;
 
     @Column(name = "PYMT_CNT")
-    private int pymtCnt; //납입회차
+    private Integer pymtCnt; //납입회차
 
     @Column(name = "PYMT_AMT")
-    private int pymtAmt; //납입금액
+    private Integer pymtAmt; //납입금액
 
     @Column(name = "REMA_AMT")
-    private int remaAmt; //잔여납입액
+    private Integer remaAmt; //잔여납입액
 
     @Column(name = "ADD_EXPEN")
-    private int addExpen;	//추가비용
+    private Integer addExpen;	//추가비용
 
     @Column(name = "S_PROD_AMT")
-    private int sProdAmt;	//기준상품금액
+    private Integer sProdAmt;	//기준상품금액
 
     @Column(name = "DIS_AMT")
-    private int disAmt; //할인금액
+    private Integer disAmt; //할인금액
 
     @Column(name = "REDUC_AMT")
-    private int reducAmt; //초기감면금액
+    private Integer reducAmt; //초기감면금액
 
     @Column(name = "ADD_MIN_AMT")
-    private int addMinAmt; //변동금액
+    private Integer addMinAmt; //변동금액
 
     @Column(name = "TOT_AMT")
-    private int totAmt;	//의전총액
+    private Integer totAmt;	//의전총액
 
     @Column(name = "CUST_AMT")
-    private int custAmt; //고객부담금
+    private Integer custAmt; //고객부담금
 
     @Column(name = "ACCEPT_AMT")
-    private int acceptAmt; //실수령액
+    private Integer acceptAmt; //실수령액
 
     @Column(name = "BAL_AMT")
-    private int balAmt; //잔액
+    private Integer balAmt; //잔액
 
     @Column(name = "RECE_TYPE")
     private String receType; //	수납유형1
@@ -81,7 +81,7 @@ public class FunCalcEntity {
     private String slipType; //전표유형
 
     @Column(name = "SLIP_SEQ")
-    private int slipSeq; //전표발생순번
+    private Integer slipSeq; //전표발생순번
 
     @Column(name = "REG_DATE")
     private LocalDateTime regDate; //등록일시
@@ -96,17 +96,17 @@ public class FunCalcEntity {
     private String updateId; //수정자ID
 
     @Column(name = "CASH_AMT")
-    private int cashAmt; //카드금액
+    private Integer cashAmt; //카드금액
 
     @Column(name = "CARD_AMT")
-    private int cardAmt; //현금금액
+    private Integer cardAmt; //현금금액
 
     private String cashcheckno; //현금영수증번호
 
     private String billcheck; //계산서발행체크
 
     @Column(name = "ISSUE_CASH_AMT")
-    private int issueCashAmt; //의전결산현금금액(발행용도)
+    private Integer issueCashAmt; //의전결산현금금액(발행용도)
 
     private String memo; //추가사항메모;
 
