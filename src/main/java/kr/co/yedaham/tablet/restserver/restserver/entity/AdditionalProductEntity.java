@@ -216,6 +216,8 @@ import javax.persistence.*;
         classes = @ConstructorResult(
                 targetClass = AdditionalProductList.class,
                 columns = {
+                        @ColumnResult(name = "assi_prod_cd", type = String.class),
+                        @ColumnResult(name = "main_gb", type = String.class),
                         @ColumnResult(name = "refalph", type = String.class),
                         @ColumnResult(name = "refnum", type = String.class),
                         @ColumnResult(name = "cd", type = String.class),
@@ -224,12 +226,19 @@ import javax.persistence.*;
                         @ColumnResult(name = "commt", type = String.class),
                         @ColumnResult(name = "qty", type = String.class),
                         @ColumnResult(name = "amt", type = String.class),
+                        @ColumnResult(name = "state", type = String.class),
+                        @ColumnResult(name = "creat_yn", type = String.class),
+                        @ColumnResult(name = "fu04_qty", type = String.class),
+                        @ColumnResult(name = "fu04_amt", type = String.class),
                 })
 )
 
 
 @NamedNativeQuery(name = "findAdditionalNewProductList",
-        query = "select refalph,\n" +
+        query = "select \n" +
+                "       assi_prod_cd," +
+                "       '41' main_gb,\n" +
+                "       refalph,\n" +
                 "       refnum,\n" +
                 "       cd,\n" +
                 "       cdnm,\n" +
@@ -243,6 +252,7 @@ import javax.persistence.*;
                 "       FU04_AMT \n" +
                 "from(\n" +
                 "      SELECT\n" +
+                "      B.PLICD AS assi_prod_cd,\n" +
                 "      A.REF_ALPH AS refalph,\n" +
                 "      A.REF_NUM AS refnum,\n" +
                 "      A.CD,\n" +
@@ -255,7 +265,7 @@ import javax.persistence.*;
                 "      decode(:amt,-1,\n" +
                 "                   RANK() OVER (PARTITION BY replace(replace(B.PLI_NM, '/', ''),'(일반)','') ORDER BY NVL(B.AMT, '0') DESC),\n" +
                 "                   RANK() OVER (PARTITION BY replace(replace(B.PLI_NM, '/', ''),'(일반)','') ORDER BY NVL(B.AMT, '0') )\n" +
-                "      ) add_type\n" +
+                "      ) add_type, \n" +
                 "        '1' AS STATE, \n" +
                 "        'N' AS CREAT_YN, \n" +
                 "        FU04.QTY AS FU04_QTY, \n" +
@@ -263,7 +273,7 @@ import javax.persistence.*;
                 "      FROM TBCM1012 A\n" +
                 "      LEFT JOIN (\n" +
                 "                SELECT\n" +
-                "                B.PLICD, a.pli_dcd,B.PLICD,B.PLI_NM,B.COMMT, A.QTY, B.UNIT_AMT AS AMT, B.UNIT_AMT  , SUBSTR(TABLET_PLI_GCD,3,2) AS PRODGB,\n" +
+                "                B.PLICD, a.pli_dcd, B.PLI_NM,B.COMMT, A.QTY, B.UNIT_AMT AS AMT, B.UNIT_AMT  , SUBSTR(TABLET_PLI_GCD,3,2) AS PRODGB,\n" +
                 "                B.TABLET_UPSELL_SEQ, SELECTGB\n" +
                 "                FROM TBPR1006 A RIGHT JOIN TBPR1007 B ON A.PLICD = B.PLICD\n" +
                 "                WHERE A.PRIM_PLICD = (SELECT PROD_MAIN_CD FROM TBNB1007 WHERE CERT_NO=:certno)\n" +
@@ -271,7 +281,8 @@ import javax.persistence.*;
                 "                AND A.USE_YN IN ('Y','1')\n" +
                 "                AND (SELECT TO_CHAR(REG_DATE,'YYYYMMDD') FROM TBFU1001 WHERE CERT_NO =:certno and STATUS <> 4) BETWEEN A.STDT AND A.EDDT\n" +
                 "      )B ON A.CD =  B.PRODGB\n" +
-                "        LEFT OUTER JOIN TBFU1004 FU04 ON FU04.ASSI_PROD_CD = B.PLICD \n" +
+                "        LEFT OUTER JOIN TBFU1001 FU01 ON FU01.CERT_NO = :certno \n" +
+                "        LEFT OUTER JOIN TBFU1004 FU04 ON FU04.FUN_CTRL_NO = FU01.FUN_CTRL_NO AND FU04.ASSI_PROD_CD = B.PLICD \n" +
                 "      WHERE 1=1\n" +
                 "      AND TYPE_CD='TABLET_CODE'\n" +
                 "      AND ((A.REF_NUM IN ('10','22','23') and :amt = '-1') or USE_YN IN ('Y'))\n" +
@@ -292,6 +303,8 @@ import javax.persistence.*;
         classes = @ConstructorResult(
                 targetClass = AdditionalProductList.class,
                 columns = {
+                        @ColumnResult(name = "assi_prod_cd", type = String.class),
+                        @ColumnResult(name = "main_gb", type = String.class),
                         @ColumnResult(name = "refalph", type = String.class),
                         @ColumnResult(name = "refnum", type = String.class),
                         @ColumnResult(name = "cd", type = String.class),
@@ -300,12 +313,18 @@ import javax.persistence.*;
                         @ColumnResult(name = "commt", type = String.class),
                         @ColumnResult(name = "qty", type = String.class),
                         @ColumnResult(name = "amt", type = String.class),
+                        @ColumnResult(name = "state", type = String.class),
+                        @ColumnResult(name = "creat_yn", type = String.class),
+                        @ColumnResult(name = "fu04_qty", type = String.class),
+                        @ColumnResult(name = "fu04_amt", type = String.class),
                 })
 )
 
 
 @NamedNativeQuery(name = "findAdditionalNewProductAllList",
         query = " SELECT \n" +
+                "B.PLICD AS ASSI_PROD_CD," +
+                "'41' AS MAIN_GB, \n" +
                 "A.REF_ALPH AS refalph,\n" +
                 "A.REF_NUM AS refnum,\n" +
                 "A.CD,\n" +
@@ -313,7 +332,7 @@ import javax.persistence.*;
                 "replace(B.PLI_NM, '/', '') AS plinm,\n" +
                 "B.COMMT,\n" +
                 "B.QTY,\n" +
-                "NVL(B.AMT, '0') AS AMT\n" +
+                "NVL(B.AMT, '0') AS AMT,\n" +
                 "'1' AS STATE, \n" +
                 "'N' AS CREAT_YN, \n" +
                 "FU04.QTY AS FU04_QTY, \n" +
@@ -335,7 +354,8 @@ import javax.persistence.*;
                 "WHERE  1=1\n" +
                 "AND B.PLICD IN('2000010','2000018','2000006','2000036') \n" +
                 ")B ON A.CD =  B.PRODGB\n" +
-                "LEFT OUTER JOIN TBFU1004 FU04 ON FU04.ASSI_PROD_CD = B.PLICD \n" +
+                "LEFT OUTER JOIN TBFU1001 FU01 ON FU01.CERT_NO = :certno \n" +
+                "LEFT OUTER JOIN TBFU1004 FU04 ON FU04.FUN_CTRL_NO = FU01.FUN_CTRL_NO AND FU04.ASSI_PROD_CD = B.PLICD \n" +
                 "WHERE 1=1\n" +
                 "AND TYPE_CD='TABLET_CODE'\n" +
                 "AND (REF_NUM IN ('10','22','23') OR USE_YN='Y')\n" +

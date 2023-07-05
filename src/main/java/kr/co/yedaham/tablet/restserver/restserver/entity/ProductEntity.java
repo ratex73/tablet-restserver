@@ -694,11 +694,11 @@ import javax.persistence.*;
                         @ColumnResult(name = "main_gb", type = String.class),
                         @ColumnResult(name = "init", type = String.class),
                         @ColumnResult(name = "upsellyn", type = String.class),
-                        @ColumnResult(name = "ASSI_PROD_CD", type = String.class),
-                        @ColumnResult(name = "STATE", type = String.class),
-                        @ColumnResult(name = "CREAT_YN", type = String.class),
-                        @ColumnResult(name = "FU04_QTY", type = String.class),
-                        @ColumnResult(name = "FU04_AMT", type = String.class)
+                        @ColumnResult(name = "assi_prod_cd", type = String.class),
+                        @ColumnResult(name = "state", type = String.class),
+                        @ColumnResult(name = "creat_yn", type = String.class),
+                        @ColumnResult(name = "fu04_qty", type = String.class),
+                        @ColumnResult(name = "fu04_amt", type = String.class)
                 })
 )
 
@@ -714,8 +714,8 @@ import javax.persistence.*;
                 "                TOT_TB.QTY,\n" +
                 "                TOT_TB.AMT,\n" +
                 "                TOT_TB.PAYBACK,\n" +
-                //"                TOT_TB.MAIN_GB,\n" +
-                "                '' MAIN_GB,\n" +
+                "                TOT_TB.MAIN_GB,\n" +
+                //"                '' MAIN_GB,\n" +
                 "                '' AS INIT,\n" +
                 "                TOT_TB.UPSELLYN,\n" +
                 "                TOT_TB.ASSI_PROD_CD,\n" +

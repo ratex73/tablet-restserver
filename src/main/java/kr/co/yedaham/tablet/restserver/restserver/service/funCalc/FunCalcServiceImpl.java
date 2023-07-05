@@ -12,6 +12,7 @@ import kr.co.yedaham.tablet.restserver.restserver.resp.funCalc.FunItemResp;
 import kr.co.yedaham.tablet.restserver.restserver.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,7 @@ public class FunCalcServiceImpl implements FunCalcService {
     }
 
     //의전물품 및 정산저장
+    @Transactional
     public CommonResult saveFunItemCalc(FunItemCalcDto funItemCalcDto) {
         boolean saveYn = true;
         List<FunItemEntity> funItemEntityList = new ArrayList<>();
@@ -54,7 +56,8 @@ public class FunCalcServiceImpl implements FunCalcService {
         FunCalcInfo funCalcInfo  = new FunCalcInfo();
         funCalcInfo.setAcceptAmt( );
         */
-        FunItemId funItemId;
+        FunItemId funItemId = null;
+
         for(int i=0; i<funItemInfoList.size(); i++) {
             funItemId = funItemInfoList.get(i).getFunItemId();
 
@@ -64,9 +67,12 @@ public class FunCalcServiceImpl implements FunCalcService {
         }
         System.out.println("saveFunItemCalc.funItemEntityList=====================" + funItemEntityList.toString());
         System.out.println("saveFunItemCalc.funCalcInfo=====================" + funCalcInfo.toString());
-        
-        //의전물품 데이터 전체 삭제
-        funItemResp.deleteAll(funItemEntityList);
+
+        if(funItemId != null) {
+            //의전물품 데이터 전체 삭제
+            Integer delCnt = funItemResp.deleteByFunItemIdFunCtrlNo(funItemId.getFunCtrlNo());
+            System.out.println("============> DelCnt = " + delCnt.toString());
+        }
 
         //의전물품 데이터 저장
         funItemResp.saveAll(funItemEntityList);
