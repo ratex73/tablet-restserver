@@ -689,6 +689,7 @@ import javax.persistence.*;
                         @ColumnResult(name = "plinm", type = String.class),
                         @ColumnResult(name = "commt", type = String.class),
                         @ColumnResult(name = "qty", type = String.class),
+                        @ColumnResult(name = "cont_qty", type = String.class),
                         @ColumnResult(name = "amt", type = String.class),
                         @ColumnResult(name = "payback", type = String.class),
                         @ColumnResult(name = "main_gb", type = String.class),
@@ -711,7 +712,8 @@ import javax.persistence.*;
                 "                TOT_TB.CD_NM AS cdnm,\n" +
                 "                NVL(replace(TOT_TB.PLI_NM, '/', ''),' ') AS plinm,\n" +
                 "                TOT_TB.COMMT,\n" +
-                "                TOT_TB.QTY,\n" +
+                "                NVL(FU04.QTY, TOT_TB.QTY) QTY,\n" +
+                "                TOT_TB.QTY AS CONT_QTY,\n" +
                 "                TOT_TB.AMT,\n" +
                 "                TOT_TB.PAYBACK,\n" +
                 "                TOT_TB.MAIN_GB,\n" +
@@ -805,6 +807,7 @@ import javax.persistence.*;
                 "                    , C.CARE_ITEM_NM AS PLI_NM\n" +
                 "                    , BENEFIT_CONTENTS AS COMMT\n" +
                 "                    , 1 AS QTY\n" +
+                "                    , 1 AS CONT_QTY \n" +
                 "                    , (CASE WHEN  C.CARE_ITEM_CD ='FC04' THEN BENEFIT_VALUE ELSE 0 END) AS AMT\n" +
                 "                    , (CASE WHEN  C.CARE_ITEM_CD ='FC04' THEN BENEFIT_VALUE ELSE 0 END) AS PAYBACK\n" +
                 "                    ,'' AS MAIN_GB\n" +

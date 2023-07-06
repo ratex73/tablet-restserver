@@ -225,6 +225,7 @@ import javax.persistence.*;
                         @ColumnResult(name = "plinm", type = String.class),
                         @ColumnResult(name = "commt", type = String.class),
                         @ColumnResult(name = "qty", type = String.class),
+                        @ColumnResult(name = "cont_qty", type = String.class),
                         @ColumnResult(name = "amt", type = String.class),
                         @ColumnResult(name = "state", type = String.class),
                         @ColumnResult(name = "creat_yn", type = String.class),
@@ -245,6 +246,7 @@ import javax.persistence.*;
                 "       plinm,\n" +
                 "       commt,\n" +
                 "       qty,\n" +
+                "       cont_qty, \n" +
                 "       amt, \n" +
                 "       state, \n" +
                 "       creat_yn, \n" +
@@ -259,7 +261,8 @@ import javax.persistence.*;
                 "      A.CD_NM AS CDNM,\n" +
                 "      replace(B.PLI_NM, '/', '') AS plinm,\n" +
                 "      B.COMMT,\n" +
-                "      B.QTY,\n" +
+                "      NVL(FU04.QTY, B.QTY),\n" +
+                "      B.QTY AS CONT_QTY,\n" +
                 "      NVL(B.AMT, '0') AS AMT,\n" +
                 "       B.TABLET_UPSELL_SEQ,\n" +
                 "      decode(:amt,-1,\n" +
@@ -312,6 +315,7 @@ import javax.persistence.*;
                         @ColumnResult(name = "plinm", type = String.class),
                         @ColumnResult(name = "commt", type = String.class),
                         @ColumnResult(name = "qty", type = String.class),
+                        @ColumnResult(name = "cont_qty", type = String.class),
                         @ColumnResult(name = "amt", type = String.class),
                         @ColumnResult(name = "state", type = String.class),
                         @ColumnResult(name = "creat_yn", type = String.class),
@@ -331,7 +335,8 @@ import javax.persistence.*;
                 "A.CD_NM AS CDNM,\n" +
                 "replace(B.PLI_NM, '/', '') AS plinm,\n" +
                 "B.COMMT,\n" +
-                "B.QTY,\n" +
+                "NVL(FU04.QTY, B.QTY) QTY,\n" +
+                "B.QTY AS CONT_QTY, \n" +
                 "NVL(B.AMT, '0') AS AMT,\n" +
                 "'1' AS STATE, \n" +
                 "'N' AS CREAT_YN, \n" +
