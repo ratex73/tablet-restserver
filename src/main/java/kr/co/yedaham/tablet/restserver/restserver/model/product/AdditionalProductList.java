@@ -17,6 +17,7 @@ public class AdditionalProductList {
     private String plinm;
     private String commt;
     private String qty;
+    private String contQty;
     private String amt;
     private String state;
     private String creatYn;

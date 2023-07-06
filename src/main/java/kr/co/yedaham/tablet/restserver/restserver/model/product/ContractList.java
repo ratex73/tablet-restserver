@@ -18,6 +18,7 @@ public class ContractList {
     private String plinm;
     private String commt;
     private String qty;
+    private String contQty;
     private String amt;
     private String payback;
     private String maingb;
