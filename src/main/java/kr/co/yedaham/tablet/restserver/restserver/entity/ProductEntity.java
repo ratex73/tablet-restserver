@@ -692,6 +692,7 @@ import javax.persistence.*;
                         @ColumnResult(name = "cont_qty", type = String.class),
                         @ColumnResult(name = "amt", type = String.class),
                         @ColumnResult(name = "payback", type = String.class),
+                        @ColumnResult(name = "payback_amt", type = String.class),
                         @ColumnResult(name = "main_gb", type = String.class),
                         @ColumnResult(name = "init", type = String.class),
                         @ColumnResult(name = "upsellyn", type = String.class),
@@ -699,7 +700,8 @@ import javax.persistence.*;
                         @ColumnResult(name = "state", type = String.class),
                         @ColumnResult(name = "creat_yn", type = String.class),
                         @ColumnResult(name = "fu04_qty", type = String.class),
-                        @ColumnResult(name = "fu04_amt", type = String.class)
+                        @ColumnResult(name = "fu04_amt", type = String.class),
+                        @ColumnResult(name = "c_seq", type = String.class),
                 })
 )
 
@@ -715,7 +717,8 @@ import javax.persistence.*;
                 "                NVL(FU04.QTY, TOT_TB.QTY) QTY,\n" +
                 "                TOT_TB.QTY AS CONT_QTY,\n" +
                 "                TOT_TB.AMT,\n" +
-                "                TOT_TB.PAYBACK,\n" +
+                "                TOT_TB.PAYBACK, \n" +
+                "                CASE WHEN TOT_TB.PAYBACK IS NOT NULL THEN NVL(TRUNC(TOT_TB.PAYBACK / 1000) * 1000 * (TOT_TB.QTY - NVL(FU04.QTY, 0)), 0) ELSE 0 END PAYBACK_AMT,\n" +
                 "                TOT_TB.MAIN_GB,\n" +
                 //"                '' MAIN_GB,\n" +
                 "                '' AS INIT,\n" +
@@ -724,7 +727,8 @@ import javax.persistence.*;
                 "                (CASE WHEN TOT_TB.ASSI_PROD_CD IS NOT NULL AND FU04.ASSI_PROD_CD IS NULL THEN '2' WHEN FU04.ASSI_PROD_CD IS NOT NULL AND TOT_TB.QTY <> FU04.QTY THEN '2' ELSE FU04.STATE END) STATE, \n" +
                 "                FU04.CREAT_YN,\n" +
                 "                FU04.QTY AS FU04_QTY,\n" +
-                "                FU04.AMT AS FU04_AMT \n" +
+                "                FU04.AMT AS FU04_AMT, \n" +
+                "                0 AS C_SEQ \n" +
                 "                FROM (\n" +
                 "                SELECT\n" +
                 "                :certno AS CERT_NO,\n" +
@@ -806,18 +810,20 @@ import javax.persistence.*;
                 "                    ,'' AS CD_NM\n" +
                 "                    , C.CARE_ITEM_NM AS PLI_NM\n" +
                 "                    , BENEFIT_CONTENTS AS COMMT\n" +
-                "                    , 1 AS QTY\n" +
+                "                    , DECODE(FU47.CARE_ITEM_CD, NULL, 1, 2) AS QTY\n" +
                 "                    , 1 AS CONT_QTY \n" +
                 "                    , (CASE WHEN  C.CARE_ITEM_CD ='FC04' THEN BENEFIT_VALUE ELSE 0 END) AS AMT\n" +
                 "                    , (CASE WHEN  C.CARE_ITEM_CD ='FC04' THEN BENEFIT_VALUE ELSE 0 END) AS PAYBACK\n" +
-                "                    ,'' AS MAIN_GB\n" +
+                "                    , 0 AS PAYBACK_AMT \n" +
+                "                    ,'99' AS MAIN_GB\n" +
                 "                    ,'' AS INIT\n" +
                 "                    ,'4' AS UPSELLYN\n" +
-                "                    ,'' AS ASSI_PROD_CD\n" +
+                "                    , C.CARE_ITEM_CD AS ASSI_PROD_CD\n" +
                 "                    ,(CASE WHEN FU47.CARE_ITEM_CD IS NOT NULL THEN '1' ELSE ''END) AS STATE \n" +
                 "                    ,'' AS CREAT_YN \n" +
                 "                    , 0 AS FU04_QTY \n" +
                 "                    , 0 AS FU04_AMT \n" +
+                "                    , C.C_SEQ \n" +
                 "                FROM (\n" +
                 "                        SELECT  AA.FUN_CTRL_NO -- 의전번호\n" +
                 "                              , TO_CHAR(AA.REG_DATE, 'YYYYMMDD') AS F_REG_DATE --접수일\n" +

@@ -50,7 +50,7 @@ public class FunCalcServiceImpl implements FunCalcService {
         List<FunItemEntity> funItemEntityList = new ArrayList<>();
         List<FunItemInfo> funItemInfoList = funItemCalcDto.getFunItemList();
         FunCalcInfo funCalcInfo = funItemCalcDto.getFunCalcInfo();
-        //FunCareItemInfo funCareItemInfo = funItemCalcDto.getFunCareItemInfo();
+        FunCareItemInfo funCareItemInfo = funItemCalcDto.getFunCareItemInfo();
         /*
         FunCalcInfoM funCalcInfoM = funItemCalcDto.getFunCalcInfoM();
         FunCalcInfo funCalcInfo  = new FunCalcInfo();
@@ -84,14 +84,17 @@ public class FunCalcServiceImpl implements FunCalcService {
 
         //의전결산 데이터 저장
         funCalcResp.save(FunCalcEntity.builder().funCalcInfo(funCalcInfo).build());
-/*
+
         //만기케어 물품 수정
-        FunCareItemEntity funCareItemEntity = funCareItemResp.findByFunCtrlNoAndUseYn(funCalcInfo.getFunCalcId().getFunCtrlNo(), "Y");
-        funCareItemEntity.setUseYn('N');
+        FunCareItemEntity funCareItemEntity = funCareItemResp.findByFunCtrlNoAndUseYn(funCalcInfo.getFunCalcId().getFunCtrlNo(), 'Y');
+
+        if(funCareItemEntity != null) {
+            funCareItemEntity.setUseYn('N');
+        }
 
         //만기케어 물품 저장
         funCareItemResp.save(FunCareItemEntity.builder().funCareItemInfo(funCareItemInfo).build());
-*/
+
         return responseService.getSuccessResult();
     }
 }

@@ -8,9 +8,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Data
 public class FunCareItemInfo {
-    private long seq;
+    private Integer seq;
     private String funCtrlNo;
-    private int cSeq;
+    private Integer cSeq;
     private String careItemCd;
     private char useYn;
     private char delYn;

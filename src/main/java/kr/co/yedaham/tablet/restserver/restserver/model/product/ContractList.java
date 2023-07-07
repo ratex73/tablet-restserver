@@ -21,6 +21,7 @@ public class ContractList {
     private String contQty;
     private String amt;
     private String payback;
+    private String paybackAmt;
     private String maingb;
     private String init;
     private String upsellyn;
@@ -29,4 +30,5 @@ public class ContractList {
     private String creatYn;
     private String fu04Qty;
     private String fu04Amt;
+    private String cSeq;
 }

@@ -7,6 +7,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface FunCareItemResp extends JpaRepository<FunCareItemEntity, String> {
 
-    public FunCareItemEntity findByFunCtrlNoAndUseYn(@Param("funCtrlNo") String funCtrlNo, @Param("useYn") String useYn);
+    public FunCareItemEntity findByFunCtrlNoAndUseYn(@Param("funCtrlNo") String funCtrlNo, @Param("useYn") char useYn);
 
 }
