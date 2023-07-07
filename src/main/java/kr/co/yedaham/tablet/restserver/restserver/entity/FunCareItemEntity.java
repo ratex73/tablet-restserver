@@ -20,12 +20,12 @@ public class FunCareItemEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TBFU4447_SEQ")
     @SequenceGenerator(sequenceName = "TBFU4447_SEQ", allocationSize = 1, name = "TBFU4447_SEQ")
     @Column(name = "SEQ")
-    private long seq;
+    private Integer seq;
 
     private String funCtrlNo;
 
     @Column(name="C_SEQ")
-    private int cSeq;
+    private Integer cSeq;
 
     @Column(name="CARE_ITEM_CD")
     private String careItemCd;
