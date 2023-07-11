@@ -50,6 +50,13 @@ public class FunItemEntity {
     @Column(name = "PAY_BACK_COMMENT")
     private String payBackComment;
 
+    @PrePersist
+    //저장 전 미리 호출됨
+    //public void createdAt() {
+    public void regDateSet() {
+        this.regDate = LocalDateTime.now();
+    }
+
     @Builder
     public FunItemEntity(FunItemInfo funItemInfo) {
 

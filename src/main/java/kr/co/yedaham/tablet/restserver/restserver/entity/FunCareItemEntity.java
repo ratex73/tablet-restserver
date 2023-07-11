@@ -47,6 +47,13 @@ public class FunCareItemEntity {
     @Column(name="UPDATE_ID")
     private String updateId;
 
+    @PrePersist
+    //저장 전 미리 호출됨
+    public void regUpdateDateSet() {
+        this.regDate = LocalDateTime.now();
+        this.updateDate = LocalDateTime.now();
+    }
+
     @Builder
     public FunCareItemEntity(FunCareItemInfo funCareItemInfo) {
         seq = funCareItemInfo.getSeq();

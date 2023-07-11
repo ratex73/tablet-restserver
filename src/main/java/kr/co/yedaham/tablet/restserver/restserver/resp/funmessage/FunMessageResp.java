@@ -21,6 +21,8 @@ public interface FunMessageResp extends JpaRepository<FunMessageEntity, Long> {
     @Query(name = "getFunMessageList", nativeQuery = true)
     public List<FunMessageInfos> getFunMessageInfos(@Param("funCtrlNo") String funCtrlNo);
 
+    public FunMessageEntity findTopByFunCtrlNoOrderBySeqDesc(@Param("funCtrlNo") String funCtrlNo);
+
     public FunMessageEntity findByFunCtrlNoAndSeq(@Param("funCtrlNo") String funCtrlNo,@Param("seq") long seq);
 
 }
