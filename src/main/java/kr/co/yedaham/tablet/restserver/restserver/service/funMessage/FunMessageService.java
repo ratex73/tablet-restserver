@@ -8,6 +8,8 @@ import java.util.List;
 public interface FunMessageService {
     public boolean sendFunMessage(FunMessageSendRequest funMessageSendRequest);
     public CommonResult getFunMessageInfo(String funCtrlNo);
+
+    public CommonResult getLastFunMessageInfo(String funCtrlNo);
     public List<FunMessageInfo> saveFunMessageInfo(List<FunMessageInfo> funMessageInfos);
     public List<Object> updateFunMessageInfo(FunMessageTotal funMessageTotal);
     public SendAccCheckReponse sendAccCheck(FunMessageAccCheckRequest funMessageAccCheckRequest);

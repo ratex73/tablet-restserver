@@ -1,5 +1,6 @@
 package kr.co.yedaham.tablet.restserver.restserver.model.funCalc;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -15,6 +16,7 @@ public class FunItemInfo {
     private Integer  qty;
     private Integer  amt;
     private String creatYn;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private LocalDateTime regDate;
     private String regId;
     private LocalDateTime updateDate;

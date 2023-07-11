@@ -5,10 +5,7 @@ import kr.co.yedaham.tablet.restserver.restserver.model.funCalc.FunCalcInfo;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @DynamicUpdate

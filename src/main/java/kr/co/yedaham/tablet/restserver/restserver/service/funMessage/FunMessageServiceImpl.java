@@ -139,6 +139,21 @@ public class FunMessageServiceImpl implements FunMessageService{
 
     }
 
+    public CommonResult getLastFunMessageInfo(String funCtrlNo) {
+        CommonResult commonResult;
+        try {
+            ModelMapper mapper = new ModelMapper();
+
+            FunMessageEntity funMessageEntity = funMessageResp.findTopByFunCtrlNoOrderBySeqDesc(funCtrlNo);
+            FunMessageInfo funMessageInfo = mapper.map(funMessageEntity, FunMessageInfo.class);
+            System.out.println("==================================> funMessageInfo : " + funMessageInfo.toString());
+            return responseService.getSingleResult(funMessageInfo);
+        }catch (Exception e) {
+            return  responseService.getFailResult(9999, e.getMessage());
+        }
+
+    }
+
     @Override
     public List<FunMessageInfo> saveFunMessageInfo(List<FunMessageInfo> saveInfo) {
         ModelMapper mapper = new ModelMapper();
