@@ -29,6 +29,9 @@ public interface AdditionalProductResp extends JpaRepository<AdditionalProductEn
             , @Param("amt") String amt, @Param("cdnm") String cdnm, @Param("plicd") String plicd
             , @Param("plinm1") String plinm1 , @Param("plinm2") String plinm2 , @Param("plinm3") String plinm3);
 
+    @Query(name = "findInitAdditionalNewProductList", nativeQuery = true)
+    ArrayList<AdditionalProductList> findInitAdditionalNewProductList(@Param("certno") String certno);
+
     @Query(name = "findAdditionalNewProductAllList", nativeQuery = true)
     ArrayList<AdditionalProductList> findAdditionalNewProductAllList(@Param("certno") String certno);
 }

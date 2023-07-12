@@ -74,6 +74,18 @@ public class AdditionalProductController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")
     })
+    @ApiOperation(value = "신상품의 저장된 추가물품 조회", notes = "예다함 신상품에 대한 저장된 추가물품을 조회한다.")
+    @GetMapping(value = "/additionalproduct/getNewInit")
+    //public CommonResult getInitNewProductListData(@RequestBody AdditionalPostRequest request) {
+    public CommonResult getInitNewProductListData(@RequestParam("certno") String certno) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("============************************======" + certno);
+        return responseService.getListResult(ProductImpl.getInitAdditionalNewProductList(certno));
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")
+    })
     @ApiOperation(value = "추가적인 전체 신상품 조회", notes = "추가적인 예다함 신상품에 대한 모든 물품을 조회한다.")
     @GetMapping(value = "/additionalproduct/newall")
     public CommonResult getNewProductListData(@RequestParam("certno") String certno) {

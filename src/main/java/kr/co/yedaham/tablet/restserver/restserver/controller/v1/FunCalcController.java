@@ -60,6 +60,8 @@ public class FunCalcController {
 
             commResult = funCalcService.saveFunItemCalc(funItemCalcDto);
 
+            logger.info("saveFunItemCalc Result : " + responseService.getSuccessResult().toString());
+
         } catch(Exception e) {
             //e.printStackTrace();
             System.out.println("######## Error funItemCalcSave ########");

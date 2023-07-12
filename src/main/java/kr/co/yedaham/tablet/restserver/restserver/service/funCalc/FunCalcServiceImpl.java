@@ -1,6 +1,5 @@
 package kr.co.yedaham.tablet.restserver.restserver.service.funCalc;
 
-import kr.co.yedaham.tablet.restserver.restserver.entity.CarallocationInfoEntity;
 import kr.co.yedaham.tablet.restserver.restserver.entity.FunCalcEntity;
 import kr.co.yedaham.tablet.restserver.restserver.entity.FunCareItemEntity;
 import kr.co.yedaham.tablet.restserver.restserver.entity.FunItemEntity;
@@ -10,7 +9,6 @@ import kr.co.yedaham.tablet.restserver.restserver.resp.funCalc.FunCalcResp;
 import kr.co.yedaham.tablet.restserver.restserver.resp.funCalc.FunCareItemResp;
 import kr.co.yedaham.tablet.restserver.restserver.resp.funCalc.FunItemResp;
 import kr.co.yedaham.tablet.restserver.restserver.service.ResponseService;
-import kr.co.yedaham.tablet.restserver.restserver.service.funMessage.FunMessageServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +40,7 @@ public class FunCalcServiceImpl implements FunCalcService {
 
             funItemEntityList.add(FunItemEntity.builder().funItemInfo(funItemInfoList.get(i)).build());
         }
-        System.out.println("saveFunCalc ====funItemInfo=====================" + funItemEntityList.toString());
+        logger.info("saveFunCalc ====funItemInfo=====================" + funItemEntityList.toString());
         funItemResp.saveAll(funItemEntityList);
 
         return saveYn;
@@ -51,6 +49,9 @@ public class FunCalcServiceImpl implements FunCalcService {
     //의전물품 및 정산저장
     @Transactional
     public CommonResult saveFunItemCalc(FunItemCalcDto funItemCalcDto) {
+        
+        logger.info("######################### saveFunItemCalc Result Start #########################");
+
         boolean saveYn = true;
         List<FunItemEntity> funItemEntityList = new ArrayList<>();
         List<FunItemInfo> funItemInfoList = funItemCalcDto.getFunItemList();
@@ -92,7 +93,7 @@ public class FunCalcServiceImpl implements FunCalcService {
         if(funItemId != null) {
             //의전물품 데이터 전체 삭제
             Integer delCnt = funItemResp.deleteByFunItemIdFunCtrlNo(funItemId.getFunCtrlNo());
-            System.out.println("============> DelCnt = " + delCnt.toString());
+            logger.info("============> DelCnt = " + delCnt.toString());
         }
 
         //의전물품 데이터 저장
@@ -122,6 +123,7 @@ public class FunCalcServiceImpl implements FunCalcService {
         else {
             logger.info("funCareItem Save : 저장 대상 건 없음");
         }
+        logger.info("######################### saveFunItemCalc Result End #########################");
 
         return responseService.getSuccessResult();
     }
