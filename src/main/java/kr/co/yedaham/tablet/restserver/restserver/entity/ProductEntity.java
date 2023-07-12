@@ -58,6 +58,7 @@ import javax.persistence.*;
                         @ColumnResult(name = "plinm", type = String.class),
                         @ColumnResult(name = "commt", type = String.class),
                         @ColumnResult(name = "qty", type = String.class),
+                        @ColumnResult(name = "cont_qty", type = String.class),
                         @ColumnResult(name = "amt", type = String.class),
                         @ColumnResult(name = "payback", type = String.class),
                         @ColumnResult(name = "payback_amt", type = String.class),
@@ -229,13 +230,10 @@ import javax.persistence.*;
                 "   NVL(replace(PLI_NM, '/', ''),' ') AS plinm,\n" +
                 "   COMMT,\n" +
                 "   QTY,\n" +
+                "   1 AS CONT_QTY, \n" +
                 "   NVL(AMT, '0') AS AMT,\n" +
                 "   NVL(PAYBACK, '0') AS PAYBACK,\n" +
-                "   CASE \n" +
-                "     WHEN FU04_CNT = 0 THEN 0 \n" +
-                "     WHEN FU04_QTY IS NOT NULL AND STATE = '2' THEN NVL(AMT, 0) \n" +
-                "     ELSE 0 \n" +
-                "   END AS PAYBACK_AMT, \n" +
+                "   PAYBACK_AMT,\n" +
                 "   '' AS MAIN_GB,\n" +
                 "   INIT,\n" +
                 "   UPSELLYN,\n" +
@@ -254,9 +252,10 @@ import javax.persistence.*;
                 "       A.CD_NM,\n" +
                 "       A.CD,\n" +
                 "       B.COMMT,\n" +
-                "       B.QTY,\n" +
+                "       (CASE WHEN FU04.STATE = '2' THEN 0 ELSE B.QTY END) AS QTY,\n" +
                 "       B.AMT,\n" +
                 "       B.PAYBACK,\n" +
+                "       (CASE WHEN FU04.STATE = '2' THEN 0 ELSE B.AMT * 1 END) AS PAYBACK_AMT, \n" +
                 "       '' AS INIT,\n" +
                 "       (CASE WHEN A.REMARK = '2' AND B.PLI_NM IS NULL THEN '4' ELSE A.REMARK END) AS UPSELLYN,\n" +
                 "       RANK() OVER(partition by A.REF_NUM order by B.QTY ASC ) AS RNK,\n" +
@@ -321,10 +320,11 @@ import javax.persistence.*;
                 "   ,'' AS CD_NM\n" +
                 "   , C.CARE_ITEM_NM AS PLI_NM\n" +
                 "   , BENEFIT_CONTENTS AS COMMT\n" +
-                "   , '1' AS QTY\n" +
-                "   , (CASE WHEN  C.CARE_ITEM_CD ='FC04' THEN BENEFIT_VALUE ELSE 0 END) AS AMT\n" +
-                "   , (CASE WHEN  C.CARE_ITEM_CD ='FC04' THEN BENEFIT_VALUE ELSE 0 END) AS PAYBACK\n" +
-                "   , 0 AS PAYBACK_AMT \n" +
+                "   , (CASE WHEN FU47.CARE_ITEM_CD IS NULL THEN 0 WHEN FU47.CARE_ITEM_CD = 'FC04' THEN -1 ELSE 1 END) AS QTY\n" +
+                "   , (CASE WHEN C.CARE_ITEM_CD ='FC04' THEN -1 ELSE 1 END) AS CONT_QTY \n" +
+                "   , (CASE WHEN C.CARE_ITEM_CD ='FC04' THEN BENEFIT_VALUE ELSE 0 END) AS AMT\n" +
+                "   , (CASE WHEN C.CARE_ITEM_CD ='FC04' THEN BENEFIT_VALUE ELSE 0 END) AS PAYBACK\n" +
+                "   , (CASE WHEN FU47.CARE_ITEM_CD ='FC04' THEN BENEFIT_VALUE ELSE 0 END) AS PAYBACK_AMT \n" +
                 "   , '99' AS MAIN_GB \n" +
                 "   , '' AS INIT \n" +
                 "   , '4' AS UPSELLYN \n" +
@@ -402,8 +402,10 @@ import javax.persistence.*;
                         @ColumnResult(name = "PLI_NM", type = String.class),
                         @ColumnResult(name = "COMMT", type = String.class),
                         @ColumnResult(name = "QTY", type = String.class),
+                        @ColumnResult(name = "CONT_QTY", type = String.class),
                         @ColumnResult(name = "AMT", type = String.class),
                         @ColumnResult(name = "PAYBACK", type = String.class),
+                        @ColumnResult(name = "PAYBACK_AMT", type = String.class),
                         @ColumnResult(name = "MAIN_GB", type = String.class),
                         @ColumnResult(name = "INIT", type = String.class),
                         @ColumnResult(name = "ASSI_PROD_CD", type = String.class),
@@ -462,8 +464,10 @@ import javax.persistence.*;
               "  , PR02.ASSI_PROD_NM AS PLI_NM \n" +
               "  , PR02.GUBUN    AS COMMT\n" +
               "  , PR02.DIS_CNT  AS QTY\n" +
+              "  , PR02.DIS_CNT  AS CONT_QTY\n" +
               "  , PR02.AMT  AS AMT\n" +
               "  , PR02.AMT  AS PAYBACK\n" +
+              "  , 0  AS PAYBACK_AMT\n" +
               "  , PR02.MAIN_GB AS MAIN_GB  \n" +
               "  , PR02.BASI_YN AS INIT\n" +
               "  , PR02.ASSI_PROD_CD AS ASSI_PROD_CD\n" +
@@ -509,19 +513,23 @@ import javax.persistence.*;
                         @ColumnResult(name = "plinm", type = String.class),
                         @ColumnResult(name = "commt", type = String.class),
                         @ColumnResult(name = "qty", type = String.class),
+                        @ColumnResult(name = "cont_qty", type = String.class),
                         @ColumnResult(name = "amt", type = String.class),
                         @ColumnResult(name = "payback", type = String.class),
+                        @ColumnResult(name = "payback_amt", type = String.class),
                         @ColumnResult(name = "main_gb", type = String.class),
                         @ColumnResult(name = "init", type = String.class),
                         @ColumnResult(name = "upsellyn", type = String.class),
                         @ColumnResult(name = "ASSI_PROD_CD", type = String.class),
                         @ColumnResult(name = "STATE", type = String.class),
                         @ColumnResult(name = "CREAT_YN", type = String.class),
-                        @ColumnResult(name = "FU04_QTY", type = String.class),
-                        @ColumnResult(name = "FU04_AMT", type = String.class)
+                        @ColumnResult(name = "fu04_qty", type = String.class),
+                        @ColumnResult(name = "fu04_amt", type = String.class),
+                        @ColumnResult(name = "c_seq", type = String.class),
                 })
 )
 @NamedNativeQuery(name = "findOptionalProductList",
+/*
         query =  " SELECT\n" +
                 "                TOT_TB.CERT_NO AS CERTNO,\n" +
                 "                TOT_TB.REF_ALPH AS refalph,\n" +
@@ -530,9 +538,19 @@ import javax.persistence.*;
                 "                TOT_TB.CD_NM AS cdnm,\n" +
                 "                NVL(replace(TOT_TB.PLI_NM, '/', ''),' ') AS plinm,\n" +
                 "                TOT_TB.COMMT,\n" +
-                "                TOT_TB.QTY,\n" +
+                "                NVL(FU04.QTY, TOT_TB.QTY) QTY,\n" +
+                "                TOT_TB.QTY AS CONT_QTY,\n" +
                 "                TOT_TB.AMT,\n" +
                 "                TOT_TB.PAYBACK,\n" +
+                "                CASE \n" +
+                "                   WHEN FU04_CNT.CNT = 0 THEN 0 \n" +
+                "                   WHEN FU04.ASSI_PROD_CD IS NULL AND TOT_TB.DIS_YN = 'N' AND TOT_TB.PB_DCD <>'2'  THEN NVL(TOT_TB.AMT, 0) \n" +
+                "                   WHEN FU04.ASSI_PROD_CD IS NULL AND TOT_TB.DONATE_CORPSE_YN = 'Y' THEN DECODE(TOT_TB.PAYBACK, 0, TRUNC(TOT_TB.AMT*(1-TOT_TB.DIS_RATE)/1000)*1000 , TOT_TB.PAYBACK) \n" +
+                "                   WHEN FU04.ASSI_PROD_CD IS NULL THEN TOT_TB.PAYBACK \n" +
+                "                   WHEN FU04.ASSI_PROD_CD IS NOT NULL AND NVL(FU04.QTY, 0) > 0 AND TOT_TB.QTY <> NVL(FU04.QTY, 0) AND TOT_TB.DIS_YN = 'N' AND TOT_TB.PB_DCD <>'2' AND TOT_TB.ASSI_PROD_CD <>'2001174' THEN NVL(TRUNC(TOT_TB.AMT / TOT_TB.QTY / 1000) * 1000 * (TOT_TB.QTY - FU04.QTY),0) \n" +
+                "                   WHEN FU04.ASSI_PROD_CD IS NOT NULL AND NVL(FU04.QTY, 0) > 0 AND TOT_TB.QTY <> NVL(FU04.QTY, 0) THEN NVL(TRUNC(TOT_TB.PAYBACK / 1000) * 1000 * (TOT_TB.QTY - NVL(FU04.QTY, 0)), 0) \n" +
+                "                   ELSE 0 \n" +
+                "                END PAYBACK_AMT, \n" +
                 "                '' AS MAIN_GB,\n" +
                 "                '' AS INIT,\n" +
                 "                TOT_TB.UPSELLYN,\n" +
@@ -587,7 +605,7 @@ import javax.persistence.*;
                 "                B.ASSI_PROD_CD\n" +
                 "                ORDER BY A.REF_NUM\n" +
                 "                 ) TOT_TB \n" +
-                "                 LEFT OUTER JOIN TBFU1001 FU01 ON FU01.CERT_NO = TOT_TB.CERT_NO \n" +
+                "                 LEFT OUTER JOIN TBFU1001 FU01 ON FU01.CERT_NO = TOT_TB.CERT_NO AND FU04.ASSI_PROD_CD = TOT_TB.ASSI_PROD_CD \n" +
                 "                 LEFT OUTER JOIN TBFU1004 FU04 ON FU04.FUN_CTRL_NO = FU01.FUN_CTRL_NO \n" +
                 "                WHERE 1=1\n" +
                 "                GROUP BY\n" +
@@ -617,9 +635,11 @@ import javax.persistence.*;
                 "                    ,'' AS CD_NM\n" +
                 "                    , C.CARE_ITEM_NM AS PLI_NM\n" +
                 "                    , BENEFIT_CONTENTS AS COMMT\n" +
-                "                    , 1 AS QTY\n" +
-                "                    , (CASE WHEN  C.CARE_ITEM_CD ='FC04' THEN BENEFIT_VALUE ELSE 0 END) AS AMT\n" +
-                "                    , (CASE WHEN  C.CARE_ITEM_CD ='FC04' THEN BENEFIT_VALUE ELSE 0 END) AS PAYBACK\n" +
+                "                    , (CASE WHEN FU47.CARE_ITEM_CD IS NULL THEN 0 WHEN FU47.CARE_ITEM_CD = 'FC04' THEN -1 ELSE 1 END) AS QTY\n" +
+                "                    , (CASE WHEN C.CARE_ITEM_CD ='FC04' THEN -1 ELSE 1 END) AS CONT_QTY \n" +
+                "                    , (CASE WHEN C.CARE_ITEM_CD ='FC04' THEN BENEFIT_VALUE ELSE 0 END) AS AMT\n" +
+                "                    , (CASE WHEN C.CARE_ITEM_CD ='FC04' THEN BENEFIT_VALUE ELSE 0 END) AS PAYBACK\n" +
+                "                    , (CASE WHEN FU47.CARE_ITEM_CD ='FC04' THEN BENEFIT_VALUE ELSE 0 END) AS PAYBACK_AMT \n" +
                 "                    ,'' AS MAIN_GB\n" +
                 "                    ,'' AS INIT\n" +
                 "                    ,'4' AS UPSELLYN\n" +
@@ -685,6 +705,218 @@ import javax.persistence.*;
                 "                AND AA.SUBS_DATE BETWEEN C.SUBS_START_DATE AND C.SUBS_END_DATE\n" +
                 "                LEFT JOIN TBFU4447 D ON AA.FUN_CTRL_NO = D.FUN_CTRL_NO AND C.C_SEQ = D.C_SEQ AND C.CARE_ITEM_CD = D.CARE_ITEM_CD AND D.USE_YN = 'Y' AND D.DEL_YN = 'N'\n" +
                 "                ORDER BY REFNUM ASC \n",
+
+ */
+
+        query = " SELECT\n" +
+                "   TOT_TB.CERT_NO AS CERTNO,\n" +
+                "   TOT_TB.REF_ALPH AS refalph,\n" +
+                "   TOT_TB.REF_NUM AS refnum,\n" +
+                "   TOT_TB.CD AS cd,\n" +
+                "   TOT_TB.CD_NM AS cdnm,\n" +
+                "   NVL(replace(TOT_TB.PLI_NM, '/', ''),' ') AS plinm,\n" +
+                "   TOT_TB.COMMT,\n" +
+                "   NVL(FU04.QTY, TOT_TB.QTY) QTY,\n" +
+                "   TOT_TB.QTY AS CONT_QTY,\n" +
+                "   TOT_TB.AMT,\n" +
+                "   TOT_TB.PAYBACK,\n" +
+                "   CASE \n" +
+                "      WHEN FU04_CNT.CNT = 0 THEN 0 \n" +
+                "      WHEN FU04.ASSI_PROD_CD IS NULL AND TOT_TB.DIS_YN = 'N' AND TOT_TB.PB_DCD <>'2'  THEN NVL(TOT_TB.AMT, 0) \n" +
+                "      WHEN FU04.ASSI_PROD_CD IS NULL AND TOT_TB.DONATE_CORPSE_YN = 'Y' THEN DECODE(TOT_TB.PAYBACK, 0, TRUNC(TOT_TB.AMT*(1-TOT_TB.DIS_RATE)/1000)*1000 , TOT_TB.PAYBACK) \n" +
+                "      WHEN FU04.ASSI_PROD_CD IS NULL THEN TOT_TB.PAYBACK \n" +
+                "      WHEN FU04.ASSI_PROD_CD IS NOT NULL AND NVL(FU04.QTY, 0) > 0 AND TOT_TB.QTY <> NVL(FU04.QTY, 0) AND TOT_TB.DIS_YN = 'N' AND TOT_TB.PB_DCD <>'2' AND TOT_TB.ASSI_PROD_CD <>'2001174' THEN NVL(TRUNC(TOT_TB.AMT / TOT_TB.QTY / 1000) * 1000 * (TOT_TB.QTY - FU04.QTY),0) \n" +
+                "      WHEN FU04.ASSI_PROD_CD IS NOT NULL AND NVL(FU04.QTY, 0) > 0 AND TOT_TB.QTY <> NVL(FU04.QTY, 0) THEN NVL(TRUNC(TOT_TB.PAYBACK / 1000) * 1000 * (TOT_TB.QTY - NVL(FU04.QTY, 0)), 0) \n" +
+                "      ELSE 0 \n" +
+                "   END PAYBACK_AMT, \n" +
+                "   '' AS MAIN_GB,\n" +
+                "   '' AS INIT,\n" +
+                "   TOT_TB.UPSELLYN,\n" +
+                "   TOT_TB.ASSI_PROD_CD,\n" +
+                "   FU04.STATE,\n" +
+                "   FU04.CREAT_YN,\n" +
+                "   FU04.QTY AS FU04_QTY,\n" +
+                "   FU04.AMT AS FU04_AMT, \n" +
+                "   0 AS C_SEQ \n" +
+                " FROM \n" +
+                "   (\n" +
+                "      SELECT\n" +
+                "        :certno AS CERT_NO, \n" +
+                "        A.REF_ALPH,\n" +
+                "        A.REF_NUM,\n" +
+                "        B.PLI_NM,\n" +
+                "        A.CD_NM,\n" +
+                "        A.CD,\n" +
+                "        B.COMMT,\n" +
+                "        B.QTY,\n" +
+                "        (B.AMT / QTY) AMT,\n" +
+                "        (case when b.status <> '4' and b.dis_yn = 'N' and b.pb_dcd != '2' then b.amt / qty else b.payback / qty end) AS PAYBACK,\n" +
+                "        (CASE WHEN A.REMARK = '2' AND B.PLI_NM IS NULL THEN '4' ELSE A.REMARK END) AS UPSELLYN,\n" +
+                "        B.ASSI_PROD_CD,\n" +
+                "        B.MAIN_GB,\n" +
+                "        B.PB_DCD,\n" +
+                "        B.DIS_YN,\n" +
+                "        B.DONATE_CORPSE_YN,\n" +
+                "        B.DIS_RATE\n" +
+                "      FROM \n" +
+                "        TBCM1012 A\n" +
+                "        LEFT JOIN (\n" +
+                "              select " +
+                "                A.MAIN_GB, A.ASSI_PROD_CD,SUBSTR(d.TABLET_PLI_GCD,3,2) AS PRODGB,d.PLI_NM ,d.COMMT,d.TABLET_PLI_DCD ,A.QTY, A.AMT, A.PAYBACK,b.STATUS,b.dis_yn,e.pb_dcd, B.DONATE_CORPSE_YN, C.DIS_RATE\n" +
+                "              from TBNB1008 a\n" +
+                "                left outer join tbfu1001 b on a.cert_no = b.cert_no and b.fun_ctrl_no = :functrlno \n" +
+                "                left outer join tbnb1007 c on b.cert_no = c.cert_no\n" +
+                "                left outer join tbpr1007 d on a.assi_prod_cd = d.plicd\n" +
+                "                left outer join tbpr1006 e on a.assi_prod_cd = e.plicd and c.prod_main_cd = e.prim_plicd\n" +
+                "                                              and NVL(a.QTY, 0) = NVL((CASE \n" +
+                "                                                                         WHEN e.PRIM_PLICD = 'C100004' AND a.ASSI_PROD_CD = '2000048' THEN e.QTY \n" +
+                "                                                                         WHEN e.PRIM_PLICD = 'C100004' AND a.ASSI_PROD_CD = '2000125' THEN e.QTY \n" +
+                "                                                                         WHEN e.PRIM_PLICD = 'C100001' AND a.ASSI_PROD_CD = '2000004' THEN e.QTY \n" +
+                "                                                                         WHEN e.PRIM_PLICD = 'C100002' AND a.ASSI_PROD_CD = '2000004' THEN e.QTY \n" +
+                "                                                                         ELSE A.QTY \n" +
+                "                                                                       END),0) \n" +
+                "              WHERE a.CERT_NO =:certno\n" +
+                "        ) B ON A.CD = B.PRODGB\n" +
+                "      WHERE 1=1\n" +
+                "        AND TYPE_CD='TABLET_CODE'\n" +
+                "        AND USE_YN='Y'\n" +
+                "        AND QTY IS NOT NULL\n"+
+                "      GROUP BY\n" +
+                "        A.REF_ALPH,\n" +
+                "        A.REF_NUM,\n" +
+                "        B.PLI_NM,\n" +
+                "        A.CD_NM,\n" +
+                "        A.CD,\n" +
+                "        B.COMMT,\n" +
+                "        B.QTY,\n" +
+                "        B.AMT,\n" +
+                "        B.PAYBACK,\n" +
+                "        B.PRODGB,\n" +
+                "        A.REMARK,\n" +
+                "        b.status,\n" +
+                "        b.dis_yn,\n" +
+                "        b.pb_dcd,\n" +
+                "        B.ASSI_PROD_CD,\n" +
+                "        B.MAIN_GB,\n" +
+                "        B.PB_DCD,\n" +
+                "        B.DIS_YN,\n" +
+                "        B.DONATE_CORPSE_YN,\n" +
+                "        B.DIS_RATE \n" +
+                "      ORDER BY A.REF_NUM\n" +
+                "   ) TOT_TB \n" +
+                "     LEFT OUTER JOIN TBFU1001 FU01 ON FU01.CERT_NO = TOT_TB.CERT_NO \n" +
+                "     LEFT OUTER JOIN TBFU1004 FU04 ON FU04.FUN_CTRL_NO = FU01.FUN_CTRL_NO AND FU04.ASSI_PROD_CD = TOT_TB.ASSI_PROD_CD \n" +
+                "     LEFT OUTER JOIN (SELECT COUNT(1) CNT FROM TBFU1004 FU04 WHERE FUN_CTRL_NO = :functrlno) FU04_CNT ON 1=1  \n" +
+                " WHERE 1=1\n" +
+                " GROUP BY\n" +
+                "   TOT_TB.CERT_NO, \n" +
+                "   TOT_TB.REF_ALPH,\n" +
+                "   TOT_TB.REF_NUM,\n" +
+                "   TOT_TB.PLI_NM,\n" +
+                "   TOT_TB.CD_NM,\n" +
+                "   TOT_TB.CD,\n" +
+                "   TOT_TB.COMMT,\n" +
+                "   TOT_TB.QTY,\n" +
+                "   TOT_TB.AMT,\n" +
+                "   TOT_TB.PAYBACK,\n" +
+                "   TOT_TB.UPSELLYN,\n" +
+                "   TOT_TB.ASSI_PROD_CD,\n" +
+                "   TOT_TB.DIS_YN,\n" +
+                "   TOT_TB.PB_DCD,\n" +
+                "   TOT_TB.DONATE_CORPSE_YN,\n" +
+                "   TOT_TB.DIS_RATE, \n" +
+                "   FU04.ASSI_PROD_CD, \n" +
+                "   FU04.STATE,\n" +
+                "   FU04.CREAT_YN,\n" +
+                "   FU04.QTY,\n" +
+                "   FU04.AMT, \n" +
+                "   FU04_CNT.CNT\n" +
+                "    \n" +
+                " UNION ALL\n" +
+                "    \n" +
+                " SELECT\n" +
+                "   :certno AS CERTNO,\n" +
+                "   '만기케어' AS refalph\n" +
+                "   , 99 AS refnum\n" +
+                "   ,'' AS CD\n" +
+                "   ,'' AS CD_NM\n" +
+                "   , C.CARE_ITEM_NM AS PLI_NM\n" +
+                "   , BENEFIT_CONTENTS AS COMMT\n" +
+                "   , (CASE WHEN FU47.CARE_ITEM_CD IS NULL THEN 0 WHEN FU47.CARE_ITEM_CD = 'FC04' THEN -1 ELSE 1 END) AS QTY\n" +
+                "   , (CASE WHEN C.CARE_ITEM_CD ='FC04' THEN -1 ELSE 1 END) AS CONT_QTY \n" +
+                "   , (CASE WHEN C.CARE_ITEM_CD ='FC04' THEN BENEFIT_VALUE ELSE 0 END) AS AMT\n" +
+                "   , (CASE WHEN C.CARE_ITEM_CD ='FC04' THEN BENEFIT_VALUE ELSE 0 END) AS PAYBACK\n" +
+                "   , (CASE WHEN FU47.CARE_ITEM_CD ='FC04' THEN BENEFIT_VALUE ELSE 0 END) AS PAYBACK_AMT \n" +
+                "   ,'' AS MAIN_GB\n" +
+                "   ,'' AS INIT\n" +
+                "   ,'4' AS UPSELLYN\n" +
+                "   ,'' AS ASSI_PROD_CD\n" +
+                "   ,(CASE WHEN FU47.CARE_ITEM_CD IS NOT NULL THEN '1' ELSE ''END) AS STATE \n" +
+                "   ,'' AS CREAT_YN \n" +
+                "   , 0 AS FU04_QTY \n" +
+                "   , 0 AS FU04_AMT \n" +
+                "   , C.C_SEQ \n" +
+                " FROM \n" +
+                "   (\n" +
+                "     SELECT  \n" +
+                "       AA.FUN_CTRL_NO -- 의전번호\n" +
+                "       , TO_CHAR(AA.REG_DATE, 'YYYYMMDD') AS F_REG_DATE --접수일\n" +
+                "       , AA.CERT_NO -- 증서번호\n" +
+                "       , TRUNC(BB.DIS_APP_AMT*0.03, -3) AS AMT -- 가입금액 3%\n" +
+                "       , BB.DIS_APP_AMT AS TOT_PYAMT -- 가입금액\n" +
+                "       , CC.SUM_PYAMT AS  SUM_PYAMT  -- 납입금액\n" +
+                "       , BB.SUBS_DATE AS SUBS_DATE   --만기케어 날짜체크\n" +
+                "     FROM \n" +
+                "       TBFU1001 AA\n" +
+                "       JOIN TBNB1007 BB ON BB.CERT_NO=AA.CERT_NO AND BB.STATE = '5'\n" +
+                "       LEFT JOIN (\n" +
+                "                   SELECT\n" +
+                "                      TBBC1002.CERT_NO\n" +
+                "                     , SUM(TBBC1002.PYMT_AMT) AS SUM_PYAMT\n" +
+                "                   FROM TBBC1002\n" +
+                "                   WHERE PYMT_GB IN ('1', '2', '3', '6', '9')\n" +
+                "                       AND CERT_NO = :certno -- 증서번호\n" +
+                "                   GROUP BY TBBC1002.CERT_NO\n" +
+                "                 ) CC ON CC.CERT_NO=AA.CERT_NO\n" +
+                "     WHERE 1=1\n" +
+                "       AND NOT EXISTS ( --일시납 1년 경과 안된 건 제외\n" +
+                "                             SELECT\n" +
+                "                               NB07.CERT_NO\n" +
+                "                             FROM\n" +
+                "                               TBNB1007 NB07\n" +
+                "                               INNER JOIN (\n" +
+                "                                          SELECT\n" +
+                "                                            MAX(CERT_NO) CERT_NO\n" +
+                "                                            , MIN(PYMT_DATE) PYMT_DATE\n" +
+                "                                          FROM TBBC1002\n" +
+                "                                          WHERE CERT_NO = :certno  -- 증서번호\n" +
+                "                                          AND PYMT_GB IN ('1', '2', '3', '6', '9')\n" +
+                "                                         ) BC02\n" +
+                "                                     ON NB07.CERT_NO = BC02.CERT_NO\n" +
+                "                               LEFT OUTER JOIN ( --계약변경 월납에서 일시납으로 변경한 날 체크\n" +
+                "                                                 SELECT\n" +
+                "                                                   MAX(CERT_NO) CERT_NO\n" +
+                "                                                   , MAX(RECP_DT) RECP_DT\n" +
+                "                                                 FROM TBNB1027\n" +
+                "                                                 WHERE\n" +
+                "                                                   ALT_DCD = '1' AND PYMT_CYCLE = '00'\n" +
+                "                                                   AND CERT_NO = :certno -- 증서번호\n" +
+                "                                                ) NB27 ON NB07.CERT_NO = NB27.CERT_NO\n" +
+                "                             WHERE\n" +
+                "                               NB07.PYMT_CYCLE = '00'\n" +
+                "                               AND NB07.STATE = '5'\n" +
+                "                               AND (TO_DATE(NVL(NB27.RECP_DT, BC02.PYMT_DATE) || '000000', 'YYYYMMDDHH24MISS') + 366) > SYSDATE\n" +
+                "                               AND NB07.CERT_NO = AA.CERT_NO\n" +
+                "                      )\n" +
+                "       AND AA.FUN_CTRL_NO =  (SELECT FUN_CTRL_NO FROM TBFU1001 WHERE CERT_NO= :certno AND FUN_CTRL_NO = :functrlno) -- 증서번호\n" +
+                "       AND CC.SUM_PYAMT >= BB.DIS_APP_AMT\n" +
+                "   ) AA\n" +
+                "   INNER JOIN TBFU4446 C ON C.USE_YN = 'Y' AND C.DEL_YN = 'N' AND (AA.AMT BETWEEN C.FROM_SECTION AND C.TO_SECTION ) AND (AA.F_REG_DATE BETWEEN C.START_DATE AND C.END_DATE )\n" +
+                "                            AND AA.SUBS_DATE BETWEEN C.SUBS_START_DATE AND C.SUBS_END_DATE\n" +
+                "   LEFT OUTER JOIN TBFU4447 FU47 ON FU47.FUN_CTRL_NO = :functrlno AND FU47.C_SEQ = C.C_SEQ AND FU47.CARE_ITEM_CD = C.CARE_ITEM_CD AND FU47.USE_YN = 'Y' \n" +
+
+                "   LEFT JOIN TBFU4447 D ON AA.FUN_CTRL_NO = D.FUN_CTRL_NO AND C.C_SEQ = D.C_SEQ AND C.CARE_ITEM_CD = D.CARE_ITEM_CD AND D.USE_YN = 'Y' AND D.DEL_YN = 'N'\n" +
+                " ORDER BY REFNUM ASC \n",
         resultClass = ProductEntity.class,
         resultSetMapping = "OptionalProductListMapping")
 
@@ -773,7 +1005,7 @@ import javax.persistence.*;
                 "                B.DIS_RATE \n" +
                 "              FROM TBCM1012 A\n" +
                 "              LEFT JOIN (\n" +
-                "                          select A.MAIN_GB, A.ASSI_PROD_CD,SUBSTR(d.TABLET_PLI_GCD,3,2) AS PRODGB,d.PLI_NM ,d.COMMT,d.TABLET_PLI_DCD ,A.QTY, A.AMT, A.PAYBACK,b.STATUS,b.dis_yn,e.pb_dcd, B.DONATE_CORPSE_YN, C.DIS_RATE \n" +
+                    "                          select A.MAIN_GB, A.ASSI_PROD_CD,SUBSTR(d.TABLET_PLI_GCD,3,2) AS PRODGB,d.PLI_NM ,d.COMMT,d.TABLET_PLI_DCD ,A.QTY, A.AMT, A.PAYBACK,b.STATUS,b.dis_yn,e.pb_dcd, B.DONATE_CORPSE_YN, C.DIS_RATE \n" +
                 "                          from TBNB1008 a\n" +
                 "                          left outer join tbfu1001 b on a.cert_no = b.cert_no and b.fun_ctrl_no = :functrlno \n" +
                 "                          left outer join tbnb1007 c on b.cert_no = c.cert_no\n" +

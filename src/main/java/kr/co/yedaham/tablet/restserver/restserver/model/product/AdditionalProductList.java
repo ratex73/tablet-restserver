@@ -21,6 +21,4 @@ public class AdditionalProductList {
     private String amt;
     private String state;
     private String creatYn;
-    private String fu04Qty;
-    private String fu04Amt;
 }

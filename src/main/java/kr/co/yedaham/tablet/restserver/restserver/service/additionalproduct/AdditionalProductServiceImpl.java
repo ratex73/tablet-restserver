@@ -40,6 +40,11 @@ public class AdditionalProductServiceImpl implements AdditionalProductService {
     }
 
     @Override
+    public ArrayList<AdditionalProductList> getInitAdditionalNewProductList(String certno) {
+        return productResp.findInitAdditionalNewProductList(certno);
+    }
+
+    @Override
     public ArrayList<AdditionalProductList> getAdditionalNewProductAllList(String certno) {
         return productResp.findAdditionalNewProductAllList(certno);
     }

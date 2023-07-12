@@ -11,6 +11,8 @@ public interface AdditionalProductService {
     public ArrayList<AdditionalProductList> getAdditionalProductYedahamOneTwoAllList(String certno);
     public ArrayList<AdditionalProductList> getAdditionalDusanProductList(AdditionalPostRequest request);
     public ArrayList<AdditionalProductList> getAdditionalDusanProductAllList(String certno);
+
     public ArrayList<AdditionalProductList> getAdditionalNewProductList(AdditionalPostRequest request);
+    public ArrayList<AdditionalProductList> getInitAdditionalNewProductList(String certno);
     public ArrayList<AdditionalProductList> getAdditionalNewProductAllList(String certno);
 }

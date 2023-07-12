@@ -11,8 +11,10 @@ public class ContractDusanList {
     private String plinm;
     private String commt;
     private String qty;
+    private String contQty;
     private String amt;
     private String payback;
+    private String paybackAmt;
     private String maingb;
     private String init;
     private String assiProdCd;
