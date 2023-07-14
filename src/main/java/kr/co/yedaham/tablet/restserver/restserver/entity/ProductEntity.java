@@ -229,7 +229,7 @@ import javax.persistence.*;
                 "   CD_NM AS cdnm,\n" +
                 "   NVL(replace(PLI_NM, '/', ''),' ') AS plinm,\n" +
                 "   COMMT,\n" +
-                "   QTY,\n" +
+                "   DECODE(STATE, '2', 0, QTY) QTY,\n" +
                 "   1 AS CONT_QTY, \n" +
                 "   NVL(AMT, '0') AS AMT,\n" +
                 "   NVL(PAYBACK, '0') AS PAYBACK,\n" +
@@ -716,18 +716,18 @@ import javax.persistence.*;
                 "   TOT_TB.CD_NM AS cdnm,\n" +
                 "   NVL(replace(TOT_TB.PLI_NM, '/', ''),' ') AS plinm,\n" +
                 "   TOT_TB.COMMT,\n" +
-                "   NVL(FU04.QTY, TOT_TB.QTY) QTY,\n" +
+                "   NVL(FU04.QTY, 0) QTY,\n" +
                 "   TOT_TB.QTY AS CONT_QTY,\n" +
                 "   TOT_TB.AMT,\n" +
                 "   TOT_TB.PAYBACK,\n" +
                 "   CASE \n" +
-                "      WHEN FU04_CNT.CNT = 0 THEN 0 \n" +
-                "      WHEN FU04.ASSI_PROD_CD IS NULL AND TOT_TB.DIS_YN = 'N' AND TOT_TB.PB_DCD <>'2'  THEN NVL(TOT_TB.AMT, 0) \n" +
-                "      WHEN FU04.ASSI_PROD_CD IS NULL AND TOT_TB.DONATE_CORPSE_YN = 'Y' THEN DECODE(TOT_TB.PAYBACK, 0, TRUNC(TOT_TB.AMT*(1-TOT_TB.DIS_RATE)/1000)*1000 , TOT_TB.PAYBACK) \n" +
-                "      WHEN FU04.ASSI_PROD_CD IS NULL THEN TOT_TB.PAYBACK \n" +
-                "      WHEN FU04.ASSI_PROD_CD IS NOT NULL AND NVL(FU04.QTY, 0) > 0 AND TOT_TB.QTY <> NVL(FU04.QTY, 0) AND TOT_TB.DIS_YN = 'N' AND TOT_TB.PB_DCD <>'2' AND TOT_TB.ASSI_PROD_CD <>'2001174' THEN NVL(TRUNC(TOT_TB.AMT / TOT_TB.QTY / 1000) * 1000 * (TOT_TB.QTY - FU04.QTY),0) \n" +
-                "      WHEN FU04.ASSI_PROD_CD IS NOT NULL AND NVL(FU04.QTY, 0) > 0 AND TOT_TB.QTY <> NVL(FU04.QTY, 0) THEN NVL(TRUNC(TOT_TB.PAYBACK / 1000) * 1000 * (TOT_TB.QTY - NVL(FU04.QTY, 0)), 0) \n" +
-                "      ELSE 0 \n" +
+                "     WHEN FU04_CNT.CNT = 0 THEN 0 \n" +
+                "     WHEN FU04.ASSI_PROD_CD IS NULL AND TOT_TB.DIS_YN = 'N' AND TOT_TB.PB_DCD <>'2'  THEN NVL(TOT_TB.AMT, 0) \n" +
+                "     WHEN FU04.ASSI_PROD_CD IS NULL AND TOT_TB.DONATE_CORPSE_YN = 'Y' THEN DECODE(TOT_TB.PAYBACK, 0, TRUNC(TOT_TB.AMT*(1-TOT_TB.DIS_RATE)/1000)*1000 , TOT_TB.PAYBACK) \n" +
+                "     WHEN FU04.ASSI_PROD_CD IS NOT NULL AND NVL(FU04.QTY, 0) > 0 AND TOT_TB.QTY <> NVL(FU04.QTY, 0) AND TOT_TB.DIS_YN = 'N' AND TOT_TB.PB_DCD <>'2' AND TOT_TB.ASSI_PROD_CD <>'2001174' THEN NVL(TRUNC(TOT_TB.AMT / TOT_TB.QTY / 1000) * 1000 * (TOT_TB.QTY - FU04.QTY),0) \n" +
+                "     WHEN FU04.ASSI_PROD_CD IS NOT NULL AND NVL(FU04.QTY, 0) > 0 AND TOT_TB.QTY <> NVL(FU04.QTY, 0) THEN NVL(TRUNC(TOT_TB.PAYBACK / 1000) * 1000 * (TOT_TB.QTY - NVL(FU04.QTY, 0)), 0) \n" +
+                "     WHEN FU04.ASSI_PROD_CD IS NOT NULL AND NVL(FU04.QTY, 0) > 0 AND TOT_TB.QTY = NVL(FU04.QTY, 0) THEN 0 \n" +
+                "     ELSE TOT_TB.NB08_PAYBACK \n" +
                 "   END PAYBACK_AMT, \n" +
                 "   '' AS MAIN_GB,\n" +
                 "   '' AS INIT,\n" +
@@ -751,6 +751,7 @@ import javax.persistence.*;
                 "        B.QTY,\n" +
                 "        (B.AMT / QTY) AMT,\n" +
                 "        (case when b.status <> '4' and b.dis_yn = 'N' and b.pb_dcd != '2' then b.amt / qty else b.payback / qty end) AS PAYBACK,\n" +
+                "        B.PAYBACK AS NB08_PAYBACK, \n" +
                 "        (CASE WHEN A.REMARK = '2' AND B.PLI_NM IS NULL THEN '4' ELSE A.REMARK END) AS UPSELLYN,\n" +
                 "        B.ASSI_PROD_CD,\n" +
                 "        B.MAIN_GB,\n" +
@@ -819,6 +820,7 @@ import javax.persistence.*;
                 "   TOT_TB.QTY,\n" +
                 "   TOT_TB.AMT,\n" +
                 "   TOT_TB.PAYBACK,\n" +
+                "   TOT_TB.NB08_PAYBACK, \n" +
                 "   TOT_TB.UPSELLYN,\n" +
                 "   TOT_TB.ASSI_PROD_CD,\n" +
                 "   TOT_TB.DIS_YN,\n" +
@@ -958,7 +960,7 @@ import javax.persistence.*;
                 "   TOT_TB.CD_NM AS cdnm,\n" +
                 "   NVL(replace(TOT_TB.PLI_NM, '/', ''),' ') AS plinm,\n" +
                 "   TOT_TB.COMMT,\n" +
-                "   NVL(FU04.QTY, TOT_TB.QTY) QTY,\n" +
+                "   (CASE WHEN FU04_CNT.CNT = 0 THEN TOT_TB.QTY ELSE NVL(FU04.QTY, 0) END) QTY,\n" +
                 "   TOT_TB.QTY AS CONT_QTY,\n" +
                 "   TOT_TB.AMT,\n" +
                 "   TOT_TB.PAYBACK, \n" +
@@ -966,10 +968,10 @@ import javax.persistence.*;
                 "     WHEN FU04_CNT.CNT = 0 THEN 0 \n" +
                 "     WHEN FU04.ASSI_PROD_CD IS NULL AND TOT_TB.DIS_YN = 'N' AND TOT_TB.PB_DCD <>'2'  THEN NVL(TOT_TB.AMT, 0) \n" +
                 "     WHEN FU04.ASSI_PROD_CD IS NULL AND TOT_TB.DONATE_CORPSE_YN = 'Y' THEN DECODE(TOT_TB.PAYBACK, 0, TRUNC(TOT_TB.AMT*(1-TOT_TB.DIS_RATE)/1000)*1000 , TOT_TB.PAYBACK) \n" +
-                "     WHEN FU04.ASSI_PROD_CD IS NULL THEN TOT_TB.PAYBACK \n" +
                 "     WHEN FU04.ASSI_PROD_CD IS NOT NULL AND NVL(FU04.QTY, 0) > 0 AND TOT_TB.QTY <> NVL(FU04.QTY, 0) AND TOT_TB.DIS_YN = 'N' AND TOT_TB.PB_DCD <>'2' AND TOT_TB.ASSI_PROD_CD <>'2001174' THEN NVL(TRUNC(TOT_TB.AMT / TOT_TB.QTY / 1000) * 1000 * (TOT_TB.QTY - FU04.QTY),0) \n" +
                 "     WHEN FU04.ASSI_PROD_CD IS NOT NULL AND NVL(FU04.QTY, 0) > 0 AND TOT_TB.QTY <> NVL(FU04.QTY, 0) THEN NVL(TRUNC(TOT_TB.PAYBACK / 1000) * 1000 * (TOT_TB.QTY - NVL(FU04.QTY, 0)), 0) \n" +
-                "     ELSE 0 \n" +
+                "     WHEN FU04.ASSI_PROD_CD IS NOT NULL AND NVL(FU04.QTY, 0) > 0 AND TOT_TB.QTY = NVL(FU04.QTY, 0) THEN 0 \n" +
+                "     ELSE TOT_TB.NB08_PAYBACK \n" +
                 "   END PAYBACK_AMT, \n" +
                 //"                CASE WHEN TOT_TB.PAYBACK IS NOT NULL THEN NVL(TRUNC(TOT_TB.PAYBACK / 1000) * 1000 * (TOT_TB.QTY - NVL(FU04.QTY, 0)), 0) ELSE 0 END PAYBACK_AMT,\n" +
 
@@ -996,6 +998,7 @@ import javax.persistence.*;
                 "                (B.AMT / QTY) AMT,\n" +
                 "                RANK() OVER(partition by REF_NUM order by QTY ASC ) AS RNK,\n" +
                 "                (case when b.status <> '4' and b.dis_yn = 'N' and b.pb_dcd != '2' then b.amt / qty else b.payback / qty end) AS PAYBACK,\n" +
+                "                B.PAYBACK AS NB08_PAYBACK, \n" +
                 "                (CASE WHEN A.REMARK = '2' AND B.PLI_NM IS NULL THEN '4' ELSE A.REMARK END) AS UPSELLYN,\n" +
                 "                B.ASSI_PROD_CD,\n" +
                 "                B.MAIN_GB, \n" +
@@ -1055,6 +1058,7 @@ import javax.persistence.*;
                 "   TOT_TB.QTY,\n" +
                 "   TOT_TB.AMT,\n" +
                 "   TOT_TB.PAYBACK,\n" +
+                "   TOT_TB.NB08_PAYBACK, \n" +
                 "   TOT_TB.MAIN_GB, \n" +
                 "   TOT_TB.UPSELLYN,\n" +
                 "   TOT_TB.ASSI_PROD_CD,\n" +

@@ -13,5 +13,5 @@ public class FunItemCalcDto {
     List<FunItemInfo> funItemList;
     FunCalcInfo funCalcInfo;
     FunCareItemInfo funCareItemInfo;
-    String contractType;
+    String prodgb;
 }

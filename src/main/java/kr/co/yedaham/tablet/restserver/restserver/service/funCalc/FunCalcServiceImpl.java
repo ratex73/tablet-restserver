@@ -3,6 +3,7 @@ package kr.co.yedaham.tablet.restserver.restserver.service.funCalc;
 import kr.co.yedaham.tablet.restserver.restserver.entity.FunCalcEntity;
 import kr.co.yedaham.tablet.restserver.restserver.entity.FunCareItemEntity;
 import kr.co.yedaham.tablet.restserver.restserver.entity.FunItemEntity;
+import kr.co.yedaham.tablet.restserver.restserver.entity.FunMessageMoursEntity;
 import kr.co.yedaham.tablet.restserver.restserver.model.funCalc.*;
 import kr.co.yedaham.tablet.restserver.restserver.model.response.CommonResult;
 import kr.co.yedaham.tablet.restserver.restserver.resp.funCalc.FunCalcResp;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -57,7 +59,7 @@ public class FunCalcServiceImpl implements FunCalcService {
         List<FunItemInfo> funItemInfoList = funItemCalcDto.getFunItemList();
         FunCalcInfo funCalcInfo = funItemCalcDto.getFunCalcInfo();
         FunCareItemInfo funCareItemInfo = funItemCalcDto.getFunCareItemInfo();
-        String contractType = funItemCalcDto.getContractType(); //NEW:신상품, Y12:예다함1,2호, OP:자율선택형
+        String prodGb = funItemCalcDto.getProdgb(); //new:신상품, onetwo:예다함1,2호, dusan : 두산, optional :자율선택형
 
         FunItemId funItemId = null;
         Integer funItemQty = null;
@@ -68,16 +70,22 @@ public class FunCalcServiceImpl implements FunCalcService {
             funItemId = funItemInfoList.get(i).getFunItemId();
             funItemQty = funItemInfoList.get(i).getQty();
 
+            //신상품인 경우
+            if( (prodGb == null || !"new".equals(prodGb)) ) {
+                funItemInfoList.get(i).setState("");
+            }
+
             //예다함 1,2호가 아닌 경우 물품 전체 페이백 물품은 TBFU1004에 저장하지 않음
-            if( (contractType == null || !"Y12".equals(contractType)) && funItemInfoList.get(i).getQty() == 0) {
+            if( (prodGb == null || !"onetwo".equals(prodGb)) && funItemInfoList.get(i).getQty() == 0) {
                 addYn = false;
+                funItemInfoList.get(i).setState("");
             }
 
             if("99".equals(funItemId.getMainGb()) ) {
                 addYn = false;
             }
 
-            if("Y12".equals(contractType)) { //예다함 1,2호의 경우 페이백 물품(수량이 0으로 셋팅된 물품)은 TBFU1004에 저장하고 STATE='2'로 셋팅
+            if("onetwo".equals(prodGb)) { //예다함 1,2호의 경우 페이백 물품(수량이 0으로 셋팅된 물품)은 TBFU1004에 저장하고 STATE='2'로 셋팅
                 if(funItemInfoList.get(i).getQty() == 0) {
                     funItemInfoList.get(i).setState("2"); //페이백 처리
                 }
@@ -98,14 +106,32 @@ public class FunCalcServiceImpl implements FunCalcService {
 
         //의전물품 데이터 저장
         funItemResp.saveAll(funItemEntityList);
-        
+
+        Integer custAmt = 0;
+        custAmt = funCalcInfo.getSProdAmt() - funCalcInfo.getDisAmt() + funCalcInfo.getAddMinAmt() - funCalcInfo.getPymtAmt();
+
+        logger.info("============> custAmt = " + custAmt);
+
+        Optional<FunCalcEntity> beforeFunCalcData = funCalcResp.findById(funCalcInfo.getFunCalcId());
+
+        if (beforeFunCalcData.isPresent()) {
+            beforeFunCalcData.get().setSProdAmt(funCalcInfo.getSProdAmt());
+            beforeFunCalcData.get().setDisAmt(funCalcInfo.getDisAmt());
+            beforeFunCalcData.get().setAddMinAmt(funCalcInfo.getAddMinAmt());
+            beforeFunCalcData.get().setPymtAmt(funCalcInfo.getPymtAmt());
+            beforeFunCalcData.get().setCustAmt(custAmt);
+        }
+        else {
+            funCalcInfo.setCustAmt(custAmt);
+            //의전결산 데이터 저장
+            funCalcResp.save(FunCalcEntity.builder().funCalcInfo(funCalcInfo).build());
+        }
+        /*
         //의전결산 데이터 삭제
         if(funCalcResp.existsById(funCalcInfo.getFunCalcId())) {
             funCalcResp.deleteById(funCalcInfo.getFunCalcId());
         }
-
-        //의전결산 데이터 저장
-        funCalcResp.save(FunCalcEntity.builder().funCalcInfo(funCalcInfo).build());
+         */
 
         //만기케어 물품 수정
         FunCareItemEntity funCareItemEntity = funCareItemResp.findByFunCtrlNoAndUseYn(funCalcInfo.getFunCalcId().getFunCtrlNo(), 'Y');

@@ -75,12 +75,24 @@ public class AdditionalProductController {
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")
     })
     @ApiOperation(value = "신상품의 저장된 추가물품 조회", notes = "예다함 신상품에 대한 저장된 추가물품을 조회한다.")
-    @GetMapping(value = "/additionalproduct/getNewInit")
+    @GetMapping(value = "/additionalproduct/getInit")
     //public CommonResult getInitNewProductListData(@RequestBody AdditionalPostRequest request) {
-    public CommonResult getInitNewProductListData(@RequestParam("certno") String certno) {
+    public CommonResult getInitNewProductListData(@RequestParam("prodgb")String prodgb, @RequestParam("functrlno")String functrlno, @RequestParam("certno")String certno) {
+    //public CommonResult getInitNewProductListData(@RequestParam("certno")String certno) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         System.out.println("============************************======" + certno);
-        return responseService.getListResult(ProductImpl.getInitAdditionalNewProductList(certno));
+        System.out.println("============************************======" + prodgb);
+
+        CommonResult commonResult;
+
+        if("dusan".equals(prodgb)) {
+            System.out.println("============*****dusan**dusan***dusan**************======");
+            commonResult = responseService.getListResult(ProductImpl.getInitAdditionalDusanProductList(functrlno, certno));
+        }
+        else {
+            commonResult = responseService.getListResult(ProductImpl.getInitAdditionalNewProductList(functrlno, certno));
+        }
+        return commonResult;
     }
 
     @ApiImplicitParams({
