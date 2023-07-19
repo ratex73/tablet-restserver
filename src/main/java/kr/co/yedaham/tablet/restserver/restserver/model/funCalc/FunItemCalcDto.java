@@ -14,4 +14,5 @@ public class FunItemCalcDto {
     FunCalcInfo funCalcInfo;
     FunCareItemInfo funCareItemInfo;
     String prodgb;
+    String certno;
 }

@@ -22,9 +22,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ArrayList<ContractDusanList> getDusanProductList(String certno) {
+    public ArrayList<ContractDusanList> getDusanProductList(String certno, String functrlno) {
         ArrayList<ContractDusanList> dusanList = new ArrayList<>();
-        return dusanList = productResp.findDusanProductList(certno);
+        return dusanList = productResp.findDusanProductList(certno, functrlno);
     }
 
     @Override

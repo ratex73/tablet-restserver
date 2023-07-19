@@ -89,6 +89,10 @@ public class AdditionalProductController {
             System.out.println("============*****dusan**dusan***dusan**************======");
             commonResult = responseService.getListResult(ProductImpl.getInitAdditionalDusanProductList(functrlno, certno));
         }
+        else if("onetwo".equals(prodgb)) {
+            System.out.println("============*****onetwo**************======");
+            commonResult = responseService.getListResult(ProductImpl.getInitAdditionaOneTwoProductList(functrlno, certno));
+        }
         else {
             commonResult = responseService.getListResult(ProductImpl.getInitAdditionalNewProductList(functrlno, certno));
         }

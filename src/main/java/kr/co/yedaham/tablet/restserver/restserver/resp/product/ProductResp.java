@@ -15,7 +15,7 @@ public interface ProductResp extends JpaRepository<ProductEntity, String> {
     ArrayList<ContractList> findProductYedahamOneTwoList(@Param("certno") String certno, @Param("functrlno") String functrlno);
 
     @Query(name = "findDusanProductList", nativeQuery = true)
-    ArrayList<ContractDusanList> findDusanProductList(@Param("certno") String certno);
+    ArrayList<ContractDusanList> findDusanProductList(@Param("certno") String certno, @Param("functrlno") String functrlno);
 
     @Query(name = "findNewProductList", nativeQuery = true)
     ArrayList<ContractList> findNewProductList(@Param("certno") String certno, @Param("functrlno") String functrlno);

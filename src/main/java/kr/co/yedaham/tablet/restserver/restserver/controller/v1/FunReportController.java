@@ -7,6 +7,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
 @Api(tags = {"99. Report"})
 @RequiredArgsConstructor
 @Controller
@@ -17,16 +21,17 @@ public class FunReportController {
     @RequestMapping(value = "/funReport")
     public ModelAndView viewFunReport(Model model) {
 
-        System.out.println("=================start================");
-        //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        model.addAttribute("serverName", "Multipart Server!!!");
+        ModelAndView modelAndView = new ModelAndView();
 
-        ModelAndView mav = new ModelAndView();
+        modelAndView.setViewName("funReport");
 
-        mav.setViewName("funReport"); //jsp(html)로 갈때는 setViewName // class로 갈때는 setView
+        Map<String, Object> map = new HashMap<>();
+        map.put("name", "Bamdule");
+        map.put("date", LocalDateTime.now());
 
-        System.out.println("==================end===============");
-        return mav;
+        modelAndView.addObject("data", map);
+
+        return modelAndView;
     }
 
 }

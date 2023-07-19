@@ -52,4 +52,9 @@ public class AdditionalProductServiceImpl implements AdditionalProductService {
         System.out.println("============*****dusan**dusan***dusan**dddddd************======");
         return productResp.findInitAdditionalDusanProductList(functrlno, certno);
     }
+    @Override
+    public ArrayList<AdditionalProductList> getInitAdditionaOneTwoProductList(String functrlno, String certno) {
+        System.out.println("============*****dusan**dusan***dusan**dddddd************======");
+        return productResp.findInitAdditionalOneTwoProductList(functrlno, certno);
+    }
 }

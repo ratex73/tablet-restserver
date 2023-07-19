@@ -18,36 +18,38 @@ import javax.persistence.*;
                         @ColumnResult(name = "DIS_APP_AMT", type = Integer.class),
                         @ColumnResult(name = "PYMT_AMT", type = Integer.class),
                         @ColumnResult(name = "M_PROD_AMT", type = Integer.class),
+                        @ColumnResult(name = "EXCP_AMT", type = Integer.class),
                 })
 )
 
 
 @NamedNativeQuery(name = "findContractAmt",
         query = "SELECT\n" +
-                "                  DECODE(A.PROD_MAIN_CD,'1040001',0,A.S_PROD_AMT) AS S_PROD_AMT, -- 상품금액\n" +
-                "                  DECODE(A.PROD_MAIN_CD,'1040001',0,(CASE WHEN A.PYMT_CYCLE ='00' AND FU01.PRE_YN <>'1' AND SUBSTR(SUBS_DATE,1,4)+1||SUBSTR(SUBS_DATE,5,4) > TO_CHAR(FU01.REG_DATE,'YYYYMMDD') THEN A.S_PROD_AMT - ABS(DIS_CNT_AMT)\n" +
-                "                        WHEN A.PYMT_CYCLE ='00' AND FU01.PRE_YN = '1' AND SUBSTR(SUBS_DATE,1,4)+1||SUBSTR(SUBS_DATE,5,4) > TO_CHAR(FU01.REG_DATE,'YYYYMMDD') THEN (A.S_PROD_AMT - ABS(DIS_CNT_AMT)) *1.1\n" +
-                "                        WHEN A.PYMT_CYCLE<>'00' AND FU01.PRE_YN = '1' THEN DIS_APP_AMT * 1.1\n" +
-                "                        WHEN A.PYMT_CYCLE<>'00' AND FU01.DIS_YN ='N' THEN A.S_PROD_AMT\n" +
-                "                        ELSE A.DIS_APP_AMT END)) AS DIS_APP_AMT,\n" +
-                "                  DECODE(A.PROD_MAIN_CD,'1040001',0,(CASE WHEN A.PYMT_CYCLE ='00' AND FU01.PRE_YN <>'1' AND SUBSTR(SUBS_DATE,1,4)+1||SUBSTR(SUBS_DATE,5,4) > TO_CHAR(FU01.REG_DATE,'YYYYMMDD') THEN DIS_CNT_AMT\n" +
-                "                        WHEN A.PYMT_CYCLE ='00' AND FU01.PRE_YN = '1' AND SUBSTR(SUBS_DATE,1,4)+1||SUBSTR(SUBS_DATE,5,4) > TO_CHAR(FU01.REG_DATE,'YYYYMMDD') THEN DIS_CNT_AMT\n" +
-                "                        WHEN A.PYMT_CYCLE<>'00' AND FU01.PRE_YN = '1' THEN TERM_DIS_AMT + ABS(DIS_CNT_AMT)\n" +
-                "                        WHEN A.PYMT_CYCLE<>'00' AND FU01.DIS_YN ='N'  THEN 0\n" +
-                "                        ELSE TERM_DIS_AMT + ABS(DIS_CNT_AMT) END)) AS DIS_AMT,\n" +
-                "                   DECODE(T1.PYMT_AMT,'',0,T1.PYMT_AMT) AS PYMT_AMT, -- 납입금액\n" +
-                "                  PR08.M_PROD_AMT AS M_PROD_AMT -- 가전제품금액\n" +
-                "                                FROM TBNB1007 A LEFT JOIN (\n" +
-                "                                            SELECT\n" +
-                "                                                  TBBC1002.CERT_NO\n" +
-                "                                                 ,SUM(TBBC1002.PYMT_AMT) AS PYMT_AMT\n" +
-                "                                             FROM TBBC1002\n" +
-                "                                             WHERE PYMT_GB IN ('1','2','3','6','9')\n" +
-                "                                           GROUP BY TBBC1002.CERT_NO) T1 ON  T1.CERT_NO=A.CERT_NO\n" +
-                "                                LEFT JOIN TBFU1001 FU01 ON A.CERT_NO = FU01.CERT_NO AND FU01.FUN_CTRL_NO = :functrlno \n" +
-                "                                LEFT JOIN TBFU1006 FU06 ON FU01.FUN_CTRL_NO = FU06.FUN_CTRL_NO\n" +
-                "                                LEFT JOIN TBPR1008 PR08 ON A.PROD_MAIN_CD = PR08.PROD_MAIN_CD AND PR08.DEPCD = EMP_TO_DEP(A.SOLI_ID)\n" +
-                "                                 WHERE A.CERT_NO = :certno",
+                "  DECODE(A.PROD_MAIN_CD,'1040001',0,A.S_PROD_AMT) AS S_PROD_AMT, -- 상품금액\n" +
+                "  DECODE(A.PROD_MAIN_CD,'1040001',0,(CASE WHEN A.PYMT_CYCLE ='00' AND FU01.PRE_YN <>'1' AND SUBSTR(SUBS_DATE,1,4)+1||SUBSTR(SUBS_DATE,5,4) > TO_CHAR(FU01.REG_DATE,'YYYYMMDD') THEN A.S_PROD_AMT - ABS(DIS_CNT_AMT)\n" +
+                "                                          WHEN A.PYMT_CYCLE ='00' AND FU01.PRE_YN = '1' AND SUBSTR(SUBS_DATE,1,4)+1||SUBSTR(SUBS_DATE,5,4) > TO_CHAR(FU01.REG_DATE,'YYYYMMDD') THEN (A.S_PROD_AMT - ABS(DIS_CNT_AMT)) *1.1\n" +
+                "                                          WHEN A.PYMT_CYCLE<>'00' AND FU01.PRE_YN = '1' THEN DIS_APP_AMT * 1.1\n" +
+                "                                          WHEN A.PYMT_CYCLE<>'00' AND FU01.DIS_YN ='N' THEN A.S_PROD_AMT\n" +
+                "                                          ELSE A.DIS_APP_AMT END)) AS DIS_APP_AMT,\n" +
+                "  DECODE(A.PROD_MAIN_CD,'1040001',0,(CASE WHEN A.PYMT_CYCLE ='00' AND FU01.PRE_YN <>'1' AND SUBSTR(SUBS_DATE,1,4)+1||SUBSTR(SUBS_DATE,5,4) > TO_CHAR(FU01.REG_DATE,'YYYYMMDD') THEN DIS_CNT_AMT\n" +
+                "                                          WHEN A.PYMT_CYCLE ='00' AND FU01.PRE_YN = '1' AND SUBSTR(SUBS_DATE,1,4)+1||SUBSTR(SUBS_DATE,5,4) > TO_CHAR(FU01.REG_DATE,'YYYYMMDD') THEN DIS_CNT_AMT\n" +
+                "                                          WHEN A.PYMT_CYCLE<>'00' AND FU01.PRE_YN = '1' THEN TERM_DIS_AMT + ABS(DIS_CNT_AMT)\n" +
+                "                                          WHEN A.PYMT_CYCLE<>'00' AND FU01.DIS_YN ='N'  THEN 0\n" +
+                "                                          ELSE TERM_DIS_AMT + ABS(DIS_CNT_AMT) END)) AS DIS_AMT,\n" +
+                "  DECODE(T1.PYMT_AMT,'',0,T1.PYMT_AMT) AS PYMT_AMT, -- 납입금액\n" +
+                "  PR08.M_PROD_AMT AS M_PROD_AMT, -- 가전제품금액\n" +
+                "  A.EXCP_AMT \n" +
+                "FROM TBNB1007 A LEFT JOIN (\n" +
+                "                          SELECT\n" +
+                "                                TBBC1002.CERT_NO\n" +
+                "                               ,SUM(TBBC1002.PYMT_AMT) AS PYMT_AMT\n" +
+                "                           FROM TBBC1002\n" +
+                "                           WHERE PYMT_GB IN ('1','2','3','6','9')\n" +
+                "                         GROUP BY TBBC1002.CERT_NO) T1 ON  T1.CERT_NO=A.CERT_NO\n" +
+                "  LEFT JOIN TBFU1001 FU01 ON A.CERT_NO = FU01.CERT_NO AND FU01.FUN_CTRL_NO = :functrlno \n" +
+                "  LEFT JOIN TBFU1006 FU06 ON FU01.FUN_CTRL_NO = FU06.FUN_CTRL_NO\n" +
+                "  LEFT JOIN TBPR1008 PR08 ON A.PROD_MAIN_CD = PR08.PROD_MAIN_CD AND PR08.DEPCD = EMP_TO_DEP(A.SOLI_ID)\n" +
+                "WHERE A.CERT_NO = :certno",
         resultClass = ContractAmtEntity.class,
         resultSetMapping = "ContractAmtMapping")
 

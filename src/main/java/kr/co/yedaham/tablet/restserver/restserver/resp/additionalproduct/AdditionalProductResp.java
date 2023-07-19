@@ -37,4 +37,7 @@ public interface AdditionalProductResp extends JpaRepository<AdditionalProductEn
 
     @Query(name = "findInitAdditionalDusanProductList", nativeQuery = true)
     ArrayList<AdditionalProductList> findInitAdditionalDusanProductList(@Param("functrlno") String functrlno, @Param("certno") String certno);
+
+    @Query(name = "findInitAdditionalProductYedahamOneTwoList", nativeQuery = true)
+    ArrayList<AdditionalProductList> findInitAdditionalOneTwoProductList(@Param("functrlno") String functrlno, @Param("certno") String certno);
 }

@@ -18,4 +18,6 @@ public interface AdditionalProductService {
     public ArrayList<AdditionalProductList> getInitAdditionalNewProductList(String functrlno, String certno);
 
     public ArrayList<AdditionalProductList> getInitAdditionalDusanProductList(String functrlno, String certno);
+
+    public ArrayList<AdditionalProductList> getInitAdditionaOneTwoProductList(String functrlno, String certno);
 }
