@@ -17,6 +17,7 @@ public class ContractDusanList {
     private String paybackAmt;
     private String maingb;
     private String init;
+    private String checkYn;
     private String assiProdCd;
     private String pligcd;
     private String refalph;

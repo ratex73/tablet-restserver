@@ -11,5 +11,6 @@ public class ContractAmt {
     private Integer disAppAmt;
     private Integer pymtAmt;
     private Integer mProdAmt;
+    private Integer excpAmt;
 }
 

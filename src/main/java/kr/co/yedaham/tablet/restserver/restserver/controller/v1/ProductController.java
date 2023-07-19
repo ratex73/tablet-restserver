@@ -40,9 +40,9 @@ public class ProductController {
     })
     @ApiOperation(value = "두산상품 조회", notes = "예다함 두산에 대한 계약물품을 조회한다.")
     @GetMapping(value = "/product/dusan")
-    public CommonResult getDusanProductListData(@RequestParam("certno") String certno) {
+    public CommonResult getDusanProductListData(@RequestParam("certno") String certno, @RequestParam("functrlno") String functrlno) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return responseService.getListResult(ProductImpl.getDusanProductList(certno));
+        return responseService.getListResult(ProductImpl.getDusanProductList(certno, functrlno));
     }
 
     @ApiImplicitParams({

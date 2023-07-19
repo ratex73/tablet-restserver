@@ -53,8 +53,8 @@ public class FunCalcController {
         CommonResult commResult;
 
         try {
-            System.out.println("######## Start funItemCalcSave ########");
-            System.out.println("##################" + funItemCalcDto.toString());
+            logger.info("######## Start funItemCalcSave ########");
+            logger.info("##################" + funItemCalcDto.toString());
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -64,8 +64,8 @@ public class FunCalcController {
 
         } catch(Exception e) {
             //e.printStackTrace();
-            System.out.println("######## Error funItemCalcSave ########");
-            System.out.println(e.getMessage());
+            logger.info("######## Error funItemCalcSave ########");
+            logger.info(e.getMessage());
             throw e;
         }
 

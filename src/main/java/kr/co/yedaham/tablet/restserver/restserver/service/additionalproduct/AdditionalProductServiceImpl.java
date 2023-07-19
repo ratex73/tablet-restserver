@@ -40,12 +40,21 @@ public class AdditionalProductServiceImpl implements AdditionalProductService {
     }
 
     @Override
-    public ArrayList<AdditionalProductList> getInitAdditionalNewProductList(String certno) {
-        return productResp.findInitAdditionalNewProductList(certno);
-    }
-
-    @Override
     public ArrayList<AdditionalProductList> getAdditionalNewProductAllList(String certno) {
         return productResp.findAdditionalNewProductAllList(certno);
+    }
+    @Override
+    public ArrayList<AdditionalProductList> getInitAdditionalNewProductList(String functrlno, String certno) {
+        return productResp.findInitAdditionalNewProductList(functrlno, certno);
+    }
+    @Override
+    public ArrayList<AdditionalProductList> getInitAdditionalDusanProductList(String functrlno, String certno) {
+        System.out.println("============*****dusan**dusan***dusan**dddddd************======");
+        return productResp.findInitAdditionalDusanProductList(functrlno, certno);
+    }
+    @Override
+    public ArrayList<AdditionalProductList> getInitAdditionaOneTwoProductList(String functrlno, String certno) {
+        System.out.println("============*****dusan**dusan***dusan**dddddd************======");
+        return productResp.findInitAdditionalOneTwoProductList(functrlno, certno);
     }
 }
