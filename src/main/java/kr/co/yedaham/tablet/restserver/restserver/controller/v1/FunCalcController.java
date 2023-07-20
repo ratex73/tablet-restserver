@@ -77,8 +77,8 @@ public class FunCalcController {
     public CommonResult funItemCalcSave2(@RequestBody FunItemCalcDto funItemCalcDto) throws Exception {
 
         try {
-            System.out.println("######## Start funItemCalcSave ########");
-            System.out.println("##################" + funItemCalcDto.toString());
+            logger.info("######## Start funItemCalcSave ########");
+            logger.info("##################" + funItemCalcDto.toString());
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

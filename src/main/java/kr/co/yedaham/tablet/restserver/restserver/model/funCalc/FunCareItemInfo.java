@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @Data
+//TBFU4447
 public class FunCareItemInfo {
     private Integer seq;
     private String funCtrlNo;

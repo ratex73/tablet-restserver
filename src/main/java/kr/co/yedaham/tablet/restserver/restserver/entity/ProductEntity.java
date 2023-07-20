@@ -996,10 +996,7 @@ import javax.persistence.*;
                 "     WHEN FU04.ASSI_PROD_CD IS NOT NULL AND NVL(FU04.QTY, 0) > 0 AND TOT_TB.QTY = NVL(FU04.QTY, 0) THEN 0 \n" +
                 "     ELSE TOT_TB.NB08_PAYBACK \n" +
                 "   END PAYBACK_AMT, \n" +
-                //"                CASE WHEN TOT_TB.PAYBACK IS NOT NULL THEN NVL(TRUNC(TOT_TB.PAYBACK / 1000) * 1000 * (TOT_TB.QTY - NVL(FU04.QTY, 0)), 0) ELSE 0 END PAYBACK_AMT,\n" +
-
                 "   TOT_TB.MAIN_GB,\n" +
-                //"                '' MAIN_GB,\n" +
                 "   '' AS INIT,\n" +
                 "   TOT_TB.UPSELLYN,\n" +
                 "   TOT_TB.ASSI_PROD_CD,\n" +

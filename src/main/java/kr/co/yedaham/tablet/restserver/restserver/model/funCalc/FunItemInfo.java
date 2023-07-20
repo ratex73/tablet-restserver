@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @Data
+//TBFU1004
 public class FunItemInfo {
-
     private FunItemId funItemId;
     private String state;
     private String grpCd;

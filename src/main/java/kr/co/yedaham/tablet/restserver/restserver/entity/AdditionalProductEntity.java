@@ -28,7 +28,7 @@ import javax.persistence.*;
 )
 
 
-@NamedNativeQuery(name = "findAdditionalProductYedahamOneTwoList",
+@NamedNativeQuery(name = "findInitAdditionalYedahamOneTwoProductList",
         query = "SELECT \n" +
                 "  B.ASSI_PROD_CD, \n" +
                 "  B.MAIN_GB, \n" +
@@ -561,8 +561,6 @@ import javax.persistence.*;
                 "'1' AS STATE, \n" +
                 "'N' AS CREAT_YN, \n" +
                 "'' AS GRP_CD \n" +
-                //"FU04.QTY AS FU04_QTY, \n" +
-                //"FU04.AMT AS FU04_AMT \n" +
                 "FROM TBCM1012 A \n" +
                 "LEFT JOIN (\n" +
                 "SELECT\n" +

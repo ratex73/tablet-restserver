@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ContractDusanList {
+
     private String certno;
     private String plinm;
     private String commt;
@@ -30,4 +31,5 @@ public class ContractDusanList {
     private String fu04Qty;
     private String fu04Amt;
     private String grpCd;
+
 }
