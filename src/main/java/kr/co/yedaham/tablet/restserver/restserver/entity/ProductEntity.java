@@ -70,7 +70,8 @@ import javax.persistence.*;
                         @ColumnResult(name = "CREAT_YN", type = String.class),
                         @ColumnResult(name = "FU04_QTY", type = String.class),
                         @ColumnResult(name = "FU04_AMT", type = String.class),
-                        @ColumnResult(name = "C_SEQ", type = String.class)
+                        @ColumnResult(name = "C_SEQ", type = String.class),
+                        @ColumnResult(name = "GRP_CD", type = String.class),
                 })
 )
 
@@ -243,7 +244,8 @@ import javax.persistence.*;
                 "   CREAT_YN,\n" +
                 "   FU04_QTY,\n" +
                 "   FU04_AMT, \n" +
-                "   0 AS C_SEQ \n" +
+                "   0 AS C_SEQ, \n" +
+                "   GRP_CD \n" +
                 " FROM \n" +
                 "   (\n" +
                 "     SELECT \n" +
@@ -267,15 +269,18 @@ import javax.persistence.*;
                 "       FU04.CREAT_YN, \n" +
                 "       FU04.QTY AS FU04_QTY, \n" +
                 "       FU04.AMT AS FU04_AMT, \n" +
-                "       FU04_CNT.CNT AS FU04_CNT \n" +
+                "       FU04_CNT.CNT AS FU04_CNT, \n" +
+                "       B.GRP_CD \n" +
                 "     FROM \n" +
                 "       TBCM1012 A \n" +
                 "       LEFT JOIN (\n" +
-                "                   SELECT B.MAIN_GB, A.CERT_NO, B.ASSI_PROD_CD, B.ASSI_PROD_NM AS PLI_NM,'' AS COMMT, 1 AS QTY, B.AMT, B.AMT AS PAYBACK, SUBSTR(TABLET_PLI_GCD,3,2) AS PRODGB  FROM TBNB1008 A LEFT JOIN TBPR1002 B ON A.ASSI_PROD_CD=B.ASSI_PROD_CD\n" +
+                "                   SELECT B.MAIN_GB, A.CERT_NO, B.ASSI_PROD_CD, B.ASSI_PROD_NM AS PLI_NM,'' AS COMMT, 1 AS QTY, B.AMT, B.AMT AS PAYBACK, SUBSTR(TABLET_PLI_GCD,3,2) AS PRODGB, B.GRP_CD \n" +
+                "                   FROM TBNB1008 A LEFT JOIN TBPR1002 B ON A.ASSI_PROD_CD=B.ASSI_PROD_CD\n" +
                 "                   WHERE A.CERT_NO=:certno\n" +
                 "                   AND B.USE_YN       = 'Y'\n" +
                 "                   UNION ALL\n" +
-                "                   SELECT TBPR1002.MAIN_GB, :certno, ASSI_PROD_CD, ASSI_PROD_NM AS PLI_NM,'' AS COMMT, 1 AS QTY, AMT, AMT AS PAYBACK, SUBSTR(TABLET_PLI_GCD,3,2) AS PRODGB FROM TBPR1002\n" +
+                "                   SELECT TBPR1002.MAIN_GB, :certno, ASSI_PROD_CD, ASSI_PROD_NM AS PLI_NM,'' AS COMMT, 1 AS QTY, AMT, AMT AS PAYBACK, SUBSTR(TABLET_PLI_GCD,3,2) AS PRODGB, GRP_CD \n" +
+                "                   FROM TBPR1002\n" +
                 "                   WHERE GUBUN = (SELECT DISTINCT CASE WHEN ASSI_PROD_CD LIKE '101%' THEN '1' \n" +
                 "                                                       WHEN ASSI_PROD_CD LIKE '102%' THEN '2' \n" +
                 "                                                       WHEN ASSI_PROD_CD LIKE '106%' THEN '3' \n" +
@@ -313,7 +318,8 @@ import javax.persistence.*;
                 "   CREAT_YN,\n" +
                 "   FU04_QTY,\n" +
                 "   FU04_AMT,\n" +
-                "   FU04_CNT\n" +
+                "   FU04_CNT,\n" +
+                "   GRP_CD\n" +
                 " \n" +
                 " UNION ALL\n" +
                 " \n" +
@@ -333,12 +339,13 @@ import javax.persistence.*;
                 "   , '99' AS MAIN_GB \n" +
                 "   , '' AS INIT \n" +
                 "   , '4' AS UPSELLYN \n" +
-                "   , '' AS ASSI_PROD_CD\n" +
+                "   , C.CARE_ITEM_CD AS ASSI_PROD_CD\n" +
                 "   , '' STATE\n" +
                 "   , '' CREAT_YN\n" +
                 "   , 0 FU04_QTY\n" +
                 "   , 0 FU04_AMT\n" +
                 "   , C.C_SEQ \n" +
+                "   , '' AS GRP_CD \n" +
                 " FROM (\n" +
                 "         SELECT  AA.FUN_CTRL_NO -- 의전번호\n" +
                 "               , TO_CHAR(AA.REG_DATE, 'YYYYMMDD') AS F_REG_DATE --접수일\n" +
@@ -426,6 +433,7 @@ import javax.persistence.*;
                         @ColumnResult(name = "CREAT_YN", type = String.class),
                         @ColumnResult(name = "FU04_QTY", type = String.class),
                         @ColumnResult(name = "FU04_AMT", type = String.class),
+                        @ColumnResult(name = "GRP_CD", type = String.class),
                 })
 )
 
@@ -494,6 +502,7 @@ import javax.persistence.*;
               "  , 'N' CREAT_YN\n" +
               "  , FU04.QTY AS FU04_QTY \n" +
               "  , FU04.AMT AS FU04_AMT \n" +
+              "  , PR02.GRP_CD \n" +
               "FROM \n" +
               "  TBPR1002 PR02\n" +
               "  INNER JOIN TBNB1007 NB07 ON PR02.PROD_MAIN_CD = NB07.PROD_MAIN_CD AND NB07.CERT_NO = :certno\n" +
@@ -865,7 +874,7 @@ import javax.persistence.*;
                 "   ,'' AS MAIN_GB\n" +
                 "   ,'' AS INIT\n" +
                 "   ,'4' AS UPSELLYN\n" +
-                "   ,'' AS ASSI_PROD_CD\n" +
+                "   , C.CARE_ITEM_CD AS ASSI_PROD_CD\n" +
                 "   ,(CASE WHEN FU47.CARE_ITEM_CD IS NOT NULL THEN '1' ELSE ''END) AS STATE \n" +
                 "   ,'' AS CREAT_YN \n" +
                 "   , 0 AS FU04_QTY \n" +
@@ -961,6 +970,7 @@ import javax.persistence.*;
                         @ColumnResult(name = "fu04_qty", type = String.class),
                         @ColumnResult(name = "fu04_amt", type = String.class),
                         @ColumnResult(name = "c_seq", type = String.class),
+                        @ColumnResult(name = "grp_cd", type = String.class),
                 })
 )
 
@@ -997,7 +1007,8 @@ import javax.persistence.*;
                 "   FU04.CREAT_YN,\n" +
                 "   FU04.QTY AS FU04_QTY,\n" +
                 "   FU04.AMT AS FU04_AMT, \n" +
-                "   0 AS C_SEQ \n" +
+                "   0 AS C_SEQ, \n" +
+                "   '' AS GRP_CD \n" +
                 " FROM (\n" +
                 "              SELECT\n" +
                 "                :certno AS CERT_NO,\n" +
@@ -1110,6 +1121,7 @@ import javax.persistence.*;
                 "   , 0 AS FU04_QTY \n" +
                 "   , 0 AS FU04_AMT \n" +
                 "   , C.C_SEQ \n" +
+                "   , '' AS GRP_CD \n" +
                 " FROM (\n" +
                 "                        SELECT  AA.FUN_CTRL_NO -- 의전번호\n" +
                 "                              , TO_CHAR(AA.REG_DATE, 'YYYYMMDD') AS F_REG_DATE --접수일\n" +

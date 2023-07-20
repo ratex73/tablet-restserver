@@ -31,4 +31,5 @@ public class ContractList {
     private String fu04Qty;
     private String fu04Amt;
     private String cSeq;
+    private String grpCd;
 }

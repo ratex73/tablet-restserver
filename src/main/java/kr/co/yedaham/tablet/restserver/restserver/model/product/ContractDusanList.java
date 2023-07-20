@@ -29,4 +29,5 @@ public class ContractDusanList {
     private String creatYn;
     private String fu04Qty;
     private String fu04Amt;
+    private String grpCd;
 }
