@@ -28,7 +28,7 @@ import javax.persistence.*;
 )
 
 
-@NamedNativeQuery(name = "findInitAdditionalYedahamOneTwoProductList",
+@NamedNativeQuery(name = "findAdditionalProductYedahamOneTwoList",
         query = "SELECT \n" +
                 "  B.ASSI_PROD_CD, \n" +
                 "  B.MAIN_GB, \n" +
@@ -141,7 +141,7 @@ import javax.persistence.*;
 )
 
 
-@NamedNativeQuery(name = "findInitAdditionalProductYedahamOneTwoList",
+@NamedNativeQuery(name = "findInitAdditionalYedahamOneTwoProductList",
         query = "SELECT \n" +
                 "  B.ASSI_PROD_CD, \n" +
                 "  '02' AS MAIN_GB, \n" +
