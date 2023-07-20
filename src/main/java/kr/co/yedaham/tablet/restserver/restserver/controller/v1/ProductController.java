@@ -76,4 +76,5 @@ public class ProductController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return responseService.getListResult(ProductImpl.getContractDetailList(certNo));
     }
+    
 }

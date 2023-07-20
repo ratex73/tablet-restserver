@@ -23,6 +23,7 @@ import javax.persistence.*;
                         @ColumnResult(name = "amt", type = String.class),
                         @ColumnResult(name = "state", type = String.class),
                         @ColumnResult(name = "creat_yn", type = String.class),
+                        @ColumnResult(name = "grp_cd", type = String.class),
                 })
 )
 
@@ -41,12 +42,13 @@ import javax.persistence.*;
                 "  B.QTY AS CONT_QTY,\n" +
                 "  NVL(B.AMT, '0') AS AMT,\n" +
                 "  '1' AS STATE, \n" +
-                "  'N' AS CREAT_YN \n" +
+                "  'N' AS CREAT_YN, \n" +
+                "  B.GRP_CD \n" +
                 "FROM TBCM1012 A \n" +
                 "  LEFT JOIN (\n" +
                 "    (\n" +
                 "      SELECT \n" +
-                "        MAIN_GB, ASSI_PROD_CD, ASSI_PROD_NM AS PLI_NM,'' AS COMMT, '1' AS QTY, AMT,  SUBSTR(TABLET_PLI_GCD,3,2) AS PRODGB,TABLET_UPSELL_SEQ, SELECTGB \n" +
+                "        MAIN_GB, ASSI_PROD_CD, ASSI_PROD_NM AS PLI_NM,'' AS COMMT, '1' AS QTY, AMT,  SUBSTR(TABLET_PLI_GCD,3,2) AS PRODGB,TABLET_UPSELL_SEQ, SELECTGB, GRP_CD \n" +
                 "      FROM  TBPR1002 \n" +
                 "      WHERE PROD_MAIN_CD=(SELECT PROD_MAIN_CD FROM TBNB1007 WHERE CERT_NO=:certno)  -- 상품코드\n" +
                 "        AND ASSI_PROD_CD LIKE '6%' AND USE_YN IN('1','Y') \n" +
@@ -80,6 +82,9 @@ import javax.persistence.*;
                         @ColumnResult(name = "commt", type = String.class),
                         @ColumnResult(name = "qty", type = String.class),
                         @ColumnResult(name = "amt", type = String.class),
+                        @ColumnResult(name = "state", type = String.class),
+                        @ColumnResult(name = "creat_yn", type = String.class),
+                        @ColumnResult(name = "grp_cd", type = String.class),
                 })
 )
 
@@ -95,9 +100,8 @@ import javax.persistence.*;
                 "B.QTY,\n" +
                 "NVL(B.AMT, '0') AS AMT, \n" +
                 "  '1' AS STATE, \n" +
-                "  'N' AS CREAT_YN \n" +
-                //"  FU04.QTY AS FU04_QTY, \n" +
-                //"  FU04.AMT AS FU04_AMT \n" +
+                "  'N' AS CREAT_YN, \n" +
+                "  '' AS GRP_CD \n" +
                 "FROM TBCM1012 A \n" +
                 "LEFT JOIN (\n" +
                 "SELECT ASSI_PROD_CD, ASSI_PROD_NM AS PLI_NM,'' AS COMMT, '1' AS QTY, AMT,  SUBSTR(TABLET_PLI_GCD,3,2) AS PRODGB,TABLET_UPSELL_SEQ, SELECTGB  from  TBPR1002 \n" +
@@ -132,11 +136,12 @@ import javax.persistence.*;
                         @ColumnResult(name = "amt", type = String.class),
                         @ColumnResult(name = "state", type = String.class),
                         @ColumnResult(name = "creat_yn", type = String.class),
+                        @ColumnResult(name = "grp_cd", type = String.class),
                 })
 )
 
 
-@NamedNativeQuery(name = "findInitAdditionalProductYedahamOneTwoList",
+@NamedNativeQuery(name = "findInitAdditionalYedahamOneTwoProductList",
         query = "SELECT \n" +
                 "  B.ASSI_PROD_CD, \n" +
                 "  '02' AS MAIN_GB, \n" +
@@ -149,14 +154,15 @@ import javax.persistence.*;
                 "  FU04.QTY AS QTY,\n" +
                 "  B.QTY AS CONT_QTY,\n" +
                 "  NVL(B.AMT, '0') AS AMT,\n" +
-                "    '1' AS STATE, \n" +
-                "    'N' AS CREAT_YN \n" +
+                "  '1' AS STATE, \n" +
+                "  'N' AS CREAT_YN, \n" +
+                "  B.GRP_CD \n" +
                 "FROM \n" +
                 "  TBCM1012 A \n" +
                 "  LEFT JOIN \n" +
                 "    (\n" +
                 "       SELECT \n" +
-                "         ASSI_PROD_CD, ASSI_PROD_NM AS PLI_NM,'' AS COMMT, '1' AS QTY, AMT,  SUBSTR(TABLET_PLI_GCD,3,2) AS PRODGB,TABLET_UPSELL_SEQ, SELECTGB \n" +
+                "         ASSI_PROD_CD, ASSI_PROD_NM AS PLI_NM,'' AS COMMT, '1' AS QTY, AMT,  SUBSTR(TABLET_PLI_GCD,3,2) AS PRODGB,TABLET_UPSELL_SEQ, SELECTGB, GRP_CD \n" +
                 "       from  TBPR1002 \n" +
                 "       WHERE PROD_MAIN_CD=(SELECT PROD_MAIN_CD FROM TBNB1007 WHERE CERT_NO=:certno)  -- 상품코드\n" +
                 "         AND ASSI_PROD_CD LIKE '6%' AND USE_YN IN('1','Y') \n" +
@@ -190,6 +196,7 @@ import javax.persistence.*;
                         @ColumnResult(name = "amt", type = String.class),
                         @ColumnResult(name = "state", type = String.class),
                         @ColumnResult(name = "creat_yn", type = String.class),
+                        @ColumnResult(name = "grp_cd", type = String.class),
                 })
 )
 
@@ -208,10 +215,11 @@ import javax.persistence.*;
                 "  B.QTY AS CONT_QTY, \n" +
                 "  NVL(B.AMT, '0') AS AMT,\n" +
                 "  '1' AS STATE, \n" +
-                "  'N' AS CREAT_YN \n" +
+                "  'N' AS CREAT_YN, \n" +
+                "  B.GRP_CD \n" +
                 "FROM TBCM1012 A \n" +
                 "  LEFT JOIN (\n" +
-                "            SELECT ASSI_PROD_CD, ASSI_PROD_NM AS PLI_NM,'' AS COMMT, '1' AS QTY, AMT,  SUBSTR(TABLET_PLI_GCD,3,2) AS PRODGB,TABLET_UPSELL_SEQ, SELECTGB \n" +
+                "            SELECT ASSI_PROD_CD, ASSI_PROD_NM AS PLI_NM,'' AS COMMT, '1' AS QTY, AMT,  SUBSTR(TABLET_PLI_GCD,3,2) AS PRODGB,TABLET_UPSELL_SEQ, SELECTGB, GRP_CD \n" +
                 "            from  TBPR1002 \n" +
                 "            WHERE PROD_MAIN_CD= (SELECT PROD_MAIN_CD FROM TBNB1007 WHERE CERT_NO=:certno)\n" +
                 "              AND MAIN_GB IN('A1')\n" +
@@ -247,6 +255,9 @@ import javax.persistence.*;
                         @ColumnResult(name = "commt", type = String.class),
                         @ColumnResult(name = "qty", type = String.class),
                         @ColumnResult(name = "amt", type = String.class),
+                        @ColumnResult(name = "state", type = String.class),
+                        @ColumnResult(name = "creat_yn", type = String.class),
+                        @ColumnResult(name = "grp_cd", type = String.class),
                 })
 )
 
@@ -264,12 +275,11 @@ import javax.persistence.*;
                 "  B.QTY,\n" +
                 "  NVL(B.AMT, '0') AS AMT,\n" +
                 "  '1' AS STATE, \n" +
-                "  'N' AS CREAT_YN \n" +
-               // "  FU04.QTY AS FU04_QTY, \n" +
-               // "  FU04.AMT AS FU04_AMT \n" +
+                "  'N' AS CREAT_YN, \n" +
+                "  B.GRP_CD \n" +
                 "FROM TBCM1012 A \n" +
                 "LEFT JOIN (\n" +
-                "SELECT ASSI_PROD_CD, ASSI_PROD_NM AS PLI_NM,'' AS COMMT, '1' AS QTY, AMT,  SUBSTR(TABLET_PLI_GCD,3,2) AS PRODGB,TABLET_UPSELL_SEQ, SELECTGB  from  TBPR1002 \n" +
+                "SELECT ASSI_PROD_CD, ASSI_PROD_NM AS PLI_NM,'' AS COMMT, '1' AS QTY, AMT,  SUBSTR(TABLET_PLI_GCD,3,2) AS PRODGB,TABLET_UPSELL_SEQ, SELECTGB, GRP_CD  from  TBPR1002 \n" +
                 "WHERE PROD_MAIN_CD= (SELECT PROD_MAIN_CD FROM TBNB1007 WHERE CERT_NO=:certno)\n" +
                 "  AND MAIN_GB IN('A1')\n" +
                 "  \n" +
@@ -304,6 +314,7 @@ import javax.persistence.*;
                         @ColumnResult(name = "amt", type = String.class),
                         @ColumnResult(name = "state", type = String.class),
                         @ColumnResult(name = "creat_yn", type = String.class),
+                        @ColumnResult(name = "grp_cd", type = String.class),
                 })
 )
 
@@ -322,10 +333,11 @@ import javax.persistence.*;
                 "  B.QTY AS CONT_QTY, \n" +
                 "  NVL(B.AMT, '0') AS AMT,\n" +
                 "  '1' AS STATE, \n" +
-                "  'N' AS CREAT_YN \n" +
+                "  'N' AS CREAT_YN, \n" +
+                "  B.GRP_CD \n" +
                 "FROM TBCM1012 A \n" +
                 "  INNER JOIN (\n" +
-                "            SELECT ASSI_PROD_CD, ASSI_PROD_NM AS PLI_NM,'' AS COMMT, '1' AS QTY, AMT,  SUBSTR(TABLET_PLI_GCD,3,2) AS PRODGB,TABLET_UPSELL_SEQ, SELECTGB \n" +
+                "            SELECT ASSI_PROD_CD, ASSI_PROD_NM AS PLI_NM,'' AS COMMT, '1' AS QTY, AMT,  SUBSTR(TABLET_PLI_GCD,3,2) AS PRODGB,TABLET_UPSELL_SEQ, SELECTGB, GRP_CD \n" +
                 "            from  TBPR1002 \n" +
                 "            WHERE PROD_MAIN_CD= (SELECT PROD_MAIN_CD FROM TBNB1007 WHERE CERT_NO=:certno)\n" +
                 "              AND MAIN_GB IN('A1')\n" +
@@ -363,6 +375,7 @@ import javax.persistence.*;
                         @ColumnResult(name = "amt", type = String.class),
                         @ColumnResult(name = "state", type = String.class),
                         @ColumnResult(name = "creat_yn", type = String.class),
+                        @ColumnResult(name = "grp_cd", type = String.class),
                 })
 )
 
@@ -381,7 +394,8 @@ import javax.persistence.*;
                 "       cont_qty, \n" +
                 "       amt, \n" +
                 "       state, \n" +
-                "       creat_yn \n" +
+                "       creat_yn, \n" +
+                "       '' as grp_cd \n" +
                 "from(\n" +
                 "      SELECT\n" +
                 "      B.PLICD AS assi_prod_cd,\n" +
@@ -446,7 +460,8 @@ import javax.persistence.*;
                         @ColumnResult(name = "cont_qty", type = String.class),
                         @ColumnResult(name = "amt", type = String.class),
                         @ColumnResult(name = "state", type = String.class),
-                        @ColumnResult(name = "creat_yn", type = String.class)
+                        @ColumnResult(name = "creat_yn", type = String.class),
+                        @ColumnResult(name = "grp_cd", type = String.class),
                 })
 )
 
@@ -465,7 +480,8 @@ import javax.persistence.*;
                 "       cont_qty, \n" +
                 "       amt, \n" +
                 "       state, \n" +
-                "       creat_yn \n" +
+                "       creat_yn, \n" +
+                "       '' as grp_cd \n" +
                 "from(\n" +
                 "    SELECT\n" +
                 "      B.PLICD AS assi_prod_cd,\n" +
@@ -524,6 +540,7 @@ import javax.persistence.*;
                         @ColumnResult(name = "amt", type = String.class),
                         @ColumnResult(name = "state", type = String.class),
                         @ColumnResult(name = "creat_yn", type = String.class),
+                        @ColumnResult(name = "grp_cd", type = String.class),
                 })
 )
 
@@ -542,9 +559,8 @@ import javax.persistence.*;
                 "B.QTY AS CONT_QTY, \n" +
                 "NVL(B.AMT, '0') AS AMT,\n" +
                 "'1' AS STATE, \n" +
-                "'N' AS CREAT_YN \n" +
-                //"FU04.QTY AS FU04_QTY, \n" +
-                //"FU04.AMT AS FU04_AMT \n" +
+                "'N' AS CREAT_YN, \n" +
+                "'' AS GRP_CD \n" +
                 "FROM TBCM1012 A \n" +
                 "LEFT JOIN (\n" +
                 "SELECT\n" +

@@ -8,6 +8,7 @@ import javax.persistence.ColumnResult;
 @AllArgsConstructor
 @Data
 public class AdditionalProductList {
+
     private String assiProdCd;
     private String mainGb;
     private String refalph;
@@ -21,4 +22,6 @@ public class AdditionalProductList {
     private String amt;
     private String state;
     private String creatYn;
+    private String grpCd;
+
 }

@@ -14,6 +14,7 @@ import javax.persistence.*;
                 targetClass = ContractAmt.class,
                 columns = {
                         @ColumnResult(name = "S_PROD_AMT", type = Integer.class),
+                        @ColumnResult(name = "ORG_S_PROD_AMT", type = Integer.class),
                         @ColumnResult(name = "DIS_AMT", type = Integer.class),
                         @ColumnResult(name = "DIS_APP_AMT", type = Integer.class),
                         @ColumnResult(name = "PYMT_AMT", type = Integer.class),
@@ -26,6 +27,7 @@ import javax.persistence.*;
 @NamedNativeQuery(name = "findContractAmt",
         query = "SELECT\n" +
                 "  DECODE(A.PROD_MAIN_CD,'1040001',0,A.S_PROD_AMT) AS S_PROD_AMT, -- 상품금액\n" +
+                "  A.S_PROD_AMT AS ORG_S_PROD_AMT, -- 원상품금액 (두산상품금액 확인용)\n" +
                 "  DECODE(A.PROD_MAIN_CD,'1040001',0,(CASE WHEN A.PYMT_CYCLE ='00' AND FU01.PRE_YN <>'1' AND SUBSTR(SUBS_DATE,1,4)+1||SUBSTR(SUBS_DATE,5,4) > TO_CHAR(FU01.REG_DATE,'YYYYMMDD') THEN A.S_PROD_AMT - ABS(DIS_CNT_AMT)\n" +
                 "                                          WHEN A.PYMT_CYCLE ='00' AND FU01.PRE_YN = '1' AND SUBSTR(SUBS_DATE,1,4)+1||SUBSTR(SUBS_DATE,5,4) > TO_CHAR(FU01.REG_DATE,'YYYYMMDD') THEN (A.S_PROD_AMT - ABS(DIS_CNT_AMT)) *1.1\n" +
                 "                                          WHEN A.PYMT_CYCLE<>'00' AND FU01.PRE_YN = '1' THEN DIS_APP_AMT * 1.1\n" +

@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @ToString
 @Table(name="TBFU4447", schema = "tk_fsdev")
+//만기케어 물품 정보
 public class FunCareItemEntity {
 
     @Id

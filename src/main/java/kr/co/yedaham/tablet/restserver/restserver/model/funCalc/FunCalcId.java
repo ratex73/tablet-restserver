@@ -10,6 +10,7 @@ import java.io.Serializable;
 @Data
 @Embeddable
 @RequiredArgsConstructor
+//TBFU1006 PK
 public class FunCalcId implements Serializable {
 
     @Column(name="FUN_CTRL_NO")

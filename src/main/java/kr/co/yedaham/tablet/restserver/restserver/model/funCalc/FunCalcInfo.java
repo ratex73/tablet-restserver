@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+//TBFU1006
 public class FunCalcInfo {
 
     private FunCalcId funCalcId; //의전번호, 의전정산차수

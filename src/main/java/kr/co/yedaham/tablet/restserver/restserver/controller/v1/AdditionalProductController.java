@@ -8,16 +8,21 @@ import kr.co.yedaham.tablet.restserver.restserver.model.product.AdditionalPostRe
 import kr.co.yedaham.tablet.restserver.restserver.model.response.CommonResult;
 import kr.co.yedaham.tablet.restserver.restserver.service.ResponseService;
 import kr.co.yedaham.tablet.restserver.restserver.service.additionalproduct.AdditionalProductServiceImpl;
+import kr.co.yedaham.tablet.restserver.restserver.service.funCalc.FunCalcServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Api(tags = {"7. AdditionalProduct"})
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/v1")
 public class AdditionalProductController {
+
+    private static final Logger logger = LoggerFactory.getLogger(AdditionalProductController.class);
     private final AdditionalProductServiceImpl ProductImpl;
     private final ResponseService responseService;
 
@@ -76,21 +81,18 @@ public class AdditionalProductController {
     })
     @ApiOperation(value = "신상품의 저장된 추가물품 조회", notes = "예다함 신상품에 대한 저장된 추가물품을 조회한다.")
     @GetMapping(value = "/additionalproduct/getInit")
-    //public CommonResult getInitNewProductListData(@RequestBody AdditionalPostRequest request) {
     public CommonResult getInitNewProductListData(@RequestParam("prodgb")String prodgb, @RequestParam("functrlno")String functrlno, @RequestParam("certno")String certno) {
-    //public CommonResult getInitNewProductListData(@RequestParam("certno")String certno) {
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("============************************======" + certno);
-        System.out.println("============************************======" + prodgb);
+
+        logger.info("============************************======" + prodgb);
 
         CommonResult commonResult;
 
         if("dusan".equals(prodgb)) {
-            System.out.println("============*****dusan**dusan***dusan**************======");
             commonResult = responseService.getListResult(ProductImpl.getInitAdditionalDusanProductList(functrlno, certno));
         }
         else if("onetwo".equals(prodgb)) {
-            System.out.println("============*****onetwo**************======");
             commonResult = responseService.getListResult(ProductImpl.getInitAdditionaOneTwoProductList(functrlno, certno));
         }
         else {

@@ -9,6 +9,7 @@ import java.util.List;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
+//TBFU1004, TBFU1006, TBFU4447
 public class FunItemCalcDto {
     List<FunItemInfo> funItemList;
     FunCalcInfo funCalcInfo;

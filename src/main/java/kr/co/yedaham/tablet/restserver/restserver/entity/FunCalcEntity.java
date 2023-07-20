@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @Getter
 @ToString
 @Table(name="TBFU1006", schema = "tk_fsdev")
+//의전결산정보
 public class FunCalcEntity {
 
     @EmbeddedId

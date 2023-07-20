@@ -10,6 +10,7 @@ import java.io.Serializable;
 @Data
 @Embeddable
 @RequiredArgsConstructor
+//TBFU1004 PK
 public class FunItemId implements Serializable {
 
     @Column(name="FUN_CTRL_NO")

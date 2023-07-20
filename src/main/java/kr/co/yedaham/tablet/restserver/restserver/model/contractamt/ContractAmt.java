@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 public class ContractAmt {
     private Integer sProdAmt;
+    private Integer orgSProdAmt; //두산상품금액 확인용
     private Integer disAmt;
     private Integer disAppAmt;
     private Integer pymtAmt;

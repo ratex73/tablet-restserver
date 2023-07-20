@@ -77,6 +77,9 @@ public class FunCalcServiceImpl implements FunCalcService {
             if( prodGb == null || "new".equals(prodGb) ) {
                 funItemInfo.setState("");
             }
+            else if("dusan".equals(prodGb)) {
+                funItemInfo.setState("1");
+            }
             
             //물품코드가 null 인 경우 저장하지 않음
             if("".equals(funItemId.getAssiProdCd()) || funItemId.getAssiProdCd() == null) {
@@ -134,19 +137,19 @@ public class FunCalcServiceImpl implements FunCalcService {
 
         //두산 상품인 경우 신상품인 경우
         if("dusan".equals(prodGb)) {
-            /*
+
             ContractAmt contractAmt = contractAmtResp.findContractAmt(funItemCalcDto.getCertno(), funItemId.getFunCtrlNo());
-            sProdAmt = contractAmt.getSProdAmt();
+            sProdAmt = contractAmt.getOrgSProdAmt();
 
             logger.info("============> ContractAmt = " + contractAmt.toString());
 
             if(sProdAmt == 3060000) {
                 custAmt = funCalcInfo.getAddMinAmt();
             }
-            else {
+            else { //두산 퇴사자의 경우 전액 고객 부담
                 custAmt = sProdAmt + funCalcInfo.getAddMinAmt();
             }
-            */
+
             funItemCalcDto.getFunCalcInfo().setSProdAmt(sProdAmt);
             funItemCalcDto.getFunCalcInfo().setCustAmt(custAmt);
             funItemCalcDto.getFunCalcInfo().setRemaAmt(sProdAmt);
@@ -194,11 +197,11 @@ public class FunCalcServiceImpl implements FunCalcService {
          */
 
         //만기케어 물품 수정
-        FunCareItemEntity funCareItemEntity = funCareItemResp.findByFunCtrlNoAndUseYn(funCalcInfo.getFunCalcId().getFunCtrlNo(), 'Y');
+        FunCareItemEntity bfFunCareItemEntity = funCareItemResp.findByFunCtrlNoAndUseYn(funCalcInfo.getFunCalcId().getFunCtrlNo(), 'Y');
 
-        if (funCareItemEntity != null) {
-            funCareItemEntity.setUseYn('N');
-            funCareItemEntity.setUpdateDate(LocalDateTime.now());
+        if (bfFunCareItemEntity != null) {
+            bfFunCareItemEntity.setUseYn('N');
+            bfFunCareItemEntity.setUpdateDate(LocalDateTime.now());
         }
 
         if(!"".equals(funCareItemInfo.getFunCtrlNo()) && funCareItemInfo.getFunCtrlNo() != null) {

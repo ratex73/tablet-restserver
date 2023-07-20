@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 @Data
 public class ContractList {
+
     private String certno;
     private String refalph;
     private String refnum;
@@ -31,4 +32,6 @@ public class ContractList {
     private String fu04Qty;
     private String fu04Amt;
     private String cSeq;
+    private String grpCd;
+
 }
