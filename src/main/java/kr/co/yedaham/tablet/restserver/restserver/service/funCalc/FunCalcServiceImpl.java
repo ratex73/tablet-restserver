@@ -1,12 +1,10 @@
 package kr.co.yedaham.tablet.restserver.restserver.service.funCalc;
 
-import kr.co.yedaham.tablet.restserver.restserver.entity.FunCalcEntity;
-import kr.co.yedaham.tablet.restserver.restserver.entity.FunCareItemEntity;
-import kr.co.yedaham.tablet.restserver.restserver.entity.FunItemEntity;
-import kr.co.yedaham.tablet.restserver.restserver.entity.FunMessageMoursEntity;
+import kr.co.yedaham.tablet.restserver.restserver.entity.*;
 import kr.co.yedaham.tablet.restserver.restserver.model.contractamt.ContractAmt;
 import kr.co.yedaham.tablet.restserver.restserver.model.funCalc.*;
 import kr.co.yedaham.tablet.restserver.restserver.model.response.CommonResult;
+import kr.co.yedaham.tablet.restserver.restserver.resp.fun.FunResp;
 import kr.co.yedaham.tablet.restserver.restserver.resp.funCalc.FunCalcResp;
 import kr.co.yedaham.tablet.restserver.restserver.resp.funCalc.FunCareItemResp;
 import kr.co.yedaham.tablet.restserver.restserver.resp.funCalc.FunItemResp;
@@ -34,6 +32,8 @@ public class FunCalcServiceImpl implements FunCalcService {
 
     private final ContractAmtResp contractAmtResp;
     private final ResponseService responseService;
+
+    private final FunResp funResp;
 
     //의전물품 저장
     public boolean saveFunCalc(List<FunItemInfo> funItemInfoList) {
@@ -69,9 +69,18 @@ public class FunCalcServiceImpl implements FunCalcService {
         FunItemInfo funItemInfo;
 
         for(int i=0; i<funItemInfoList.size(); i++) {
+
             addYn = true;
             funItemId = funItemInfoList.get(i).getFunItemId();
             funItemInfo = funItemInfoList.get(i);
+
+            /*
+            if(i == 0) {
+
+                Optional<FunEntity> funEntity = funResp.findById(funItemId.getFunCtrlNo());
+                return responseService.getFailResult(9999, "값이 존재하지 않습니다.");
+            }
+            */
 
             //신상품인 경우
             if( prodGb == null || "new".equals(prodGb) ) {
@@ -109,9 +118,15 @@ public class FunCalcServiceImpl implements FunCalcService {
 
             if("dusan".equals(prodGb)) { //두산 상품인 경우
                 funItemInfoList.get(i).setCreatYn("N");
-                if(funItemInfoList.get(i).getAmt() == 0) {
+
+                //남상복, 여상복인 경우 수량이 0보다 크면 금액을 0으로 셋팅해줘야 함
+                if( ("1040112".equals(funItemId.getAssiProdCd()) || "1040113".equals(funItemId.getAssiProdCd()) ) && funItemInfoList.get(i).getQty() > 0) {
+                    funItemInfoList.get(i).setAmt(0);
+                }
+                else if(funItemInfoList.get(i).getAmt() == 0) {
                     funItemInfoList.get(i).setAmt(null);
                 }
+
             }
 
             funItemInfoList.get(i).setUpdateDate(LocalDateTime.now());

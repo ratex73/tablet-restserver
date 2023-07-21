@@ -232,7 +232,7 @@ import javax.persistence.*;
                 "   NVL(replace(PLI_NM, '/', ''),' ') AS plinm,\n" +
                 "   COMMT,\n" +
                 "   (CASE WHEN FU04_CNT = 0 THEN QTY WHEN STATE = '2' THEN 0 ELSE FU04_QTY END) QTY,\n" +
-                "   QTY AS CONT_QTY, \n" +
+                "   CONT_QTY, \n" +
                 "   NVL(AMT, '0') AS AMT,\n" +
                 "   NVL(PAYBACK, '0') AS PAYBACK,\n" +
                 "   PAYBACK_AMT,\n" +
@@ -257,6 +257,7 @@ import javax.persistence.*;
                 "       A.CD,\n" +
                 "       B.COMMT,\n" +
                 "       (CASE WHEN FU04.STATE = '2' THEN 0 ELSE B.QTY END) AS QTY,\n" +
+                "       B.QTY AS CONT_QTY, \n" +
                 "       B.AMT,\n" +
                 "       B.PAYBACK,\n" +
                 "       (CASE WHEN FU04.STATE = '2' THEN B.AMT * 1 ELSE 0 END) AS PAYBACK_AMT, \n" +
@@ -307,6 +308,7 @@ import javax.persistence.*;
                 "   CD,\n" +
                 "   COMMT,\n" +
                 "   QTY, \n" +
+                "   CONT_QTY, \n" +
                 "   AMT,\n" +
                 "   PAYBACK,\n" +
                 "   PAYBACK_AMT, \n" +
