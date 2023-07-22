@@ -74,13 +74,21 @@ public class FunCalcServiceImpl implements FunCalcService {
             funItemId = funItemInfoList.get(i).getFunItemId();
             funItemInfo = funItemInfoList.get(i);
 
-            /*
             if(i == 0) {
-
                 Optional<FunEntity> funEntity = funResp.findById(funItemId.getFunCtrlNo());
-                return responseService.getFailResult(9999, "값이 존재하지 않습니다.");
+                String status = "";
+
+                if(funEntity.isPresent()) {
+                    funEntity.get().getStatus();
+                }
+
+                if("3".equals(status) || "4".equals(status)) {
+                    return responseService.getFailResult(9999, "의전이 완료(취소)되어 물품을 저장 할 수 없습니다.");
+                }
+                else if("".equals(status)) {
+                    return responseService.getFailResult(9999, "의전 데이터가 없습니다.");
+                }
             }
-            */
 
             //신상품인 경우
             if( prodGb == null || "new".equals(prodGb) ) {
