@@ -11,6 +11,7 @@ public interface FileUploadDownloadService {
     String saveCarStoreFile(MultipartFile file);
     String storeFile(MultipartFile file);
     String storeFile(MultipartFile file, String cellPhone);
+    String storeFile(MultipartFile file, String cellPhone, String fileType);
     Resource loadFileAsDownload(String fileName);
     Resource loadFunnoAsDownload(String functrlno);
     boolean loadFunnoAsDownloadCheck(String functrlno);

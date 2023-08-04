@@ -6,6 +6,8 @@ import java.util.ArrayList;
 
 public interface TabletSmsService {
 
+    public void smsInsert(String filename, String functrlno, String cellPhone, String fileType);
+
     public void smsInsert(String filename, String functrlno, String cellPhone);
 
     public void smsInsert(String filename, String functrlno);

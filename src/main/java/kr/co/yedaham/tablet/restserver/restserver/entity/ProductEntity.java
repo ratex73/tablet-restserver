@@ -232,7 +232,7 @@ import javax.persistence.*;
                 "   NVL(replace(PLI_NM, '/', ''),' ') AS plinm,\n" +
                 "   COMMT,\n" +
                 "   (CASE WHEN FU04_CNT = 0 THEN QTY WHEN STATE = '2' THEN 0 ELSE FU04_QTY END) QTY,\n" +
-                "   QTY AS CONT_QTY, \n" +
+                "   CONT_QTY, \n" +
                 "   NVL(AMT, '0') AS AMT,\n" +
                 "   NVL(PAYBACK, '0') AS PAYBACK,\n" +
                 "   PAYBACK_AMT,\n" +
@@ -257,6 +257,7 @@ import javax.persistence.*;
                 "       A.CD,\n" +
                 "       B.COMMT,\n" +
                 "       (CASE WHEN FU04.STATE = '2' THEN 0 ELSE B.QTY END) AS QTY,\n" +
+                "       B.QTY AS CONT_QTY, \n" +
                 "       B.AMT,\n" +
                 "       B.PAYBACK,\n" +
                 "       (CASE WHEN FU04.STATE = '2' THEN B.AMT * 1 ELSE 0 END) AS PAYBACK_AMT, \n" +
@@ -307,6 +308,7 @@ import javax.persistence.*;
                 "   CD,\n" +
                 "   COMMT,\n" +
                 "   QTY, \n" +
+                "   CONT_QTY, \n" +
                 "   AMT,\n" +
                 "   PAYBACK,\n" +
                 "   PAYBACK_AMT, \n" +
@@ -756,7 +758,7 @@ import javax.persistence.*;
                 "   '' AS INIT,\n" +
                 "   TOT_TB.UPSELLYN,\n" +
                 "   TOT_TB.ASSI_PROD_CD,\n" +
-                "   (CASE WHEN TOT_TB.ASSI_PROD_CD IS NOT NULL AND FU04.ASSI_PROD_CD IS NULL THEN '2' WHEN FU04.ASSI_PROD_CD IS NOT NULL AND TOT_TB.QTY <> FU04.QTY THEN '2' ELSE FU04.STATE END) STATE, \n" +
+                "   (CASE WHEN FU04_CNT.CNT = 0 THEN '' WHEN TOT_TB.ASSI_PROD_CD IS NOT NULL AND FU04.ASSI_PROD_CD IS NULL THEN '2' WHEN FU04.ASSI_PROD_CD IS NOT NULL AND TOT_TB.QTY <> FU04.QTY THEN '2' ELSE FU04.STATE END) STATE, \n" +
                 "   FU04.CREAT_YN,\n" +
                 "   FU04.QTY AS FU04_QTY,\n" +
                 "   FU04.AMT AS FU04_AMT, \n" +
@@ -998,7 +1000,7 @@ import javax.persistence.*;
         "   '' AS INIT,\n" +
         "   TOT_TB.UPSELLYN,\n" +
         "   TOT_TB.ASSI_PROD_CD,\n" +
-        "   (CASE WHEN TOT_TB.ASSI_PROD_CD IS NOT NULL AND FU04.ASSI_PROD_CD IS NULL THEN '2' WHEN FU04.ASSI_PROD_CD IS NOT NULL AND TOT_TB.QTY <> FU04.QTY THEN '2' ELSE FU04.STATE END) STATE, \n" +
+        "   (CASE WHEN FU04_CNT.CNT = 0 THEN '' WHEN TOT_TB.ASSI_PROD_CD IS NOT NULL AND FU04.ASSI_PROD_CD IS NULL THEN '2' WHEN FU04.ASSI_PROD_CD IS NOT NULL AND TOT_TB.QTY <> FU04.QTY THEN '2' ELSE FU04.STATE END) STATE, \n" +
         "   FU04.CREAT_YN,\n" +
         "   FU04.QTY AS FU04_QTY,\n" +
         "   FU04.AMT AS FU04_AMT, \n" +
@@ -1015,7 +1017,8 @@ import javax.persistence.*;
         "                B.COMMT,\n" +
         "                B.QTY,\n" +
         "                (B.AMT / QTY) AMT,\n" +
-        "                RANK() OVER(partition by REF_NUM order by QTY ASC ) AS RNK,\n" +
+        //"                RANK() OVER(partition by REF_NUM order by QTY ASC ) AS RNK,\n" +
+        "                RANK() OVER(partition by REF_NUM order by (case when b.prod_main_cd='C150004' and ref_alph='장례도우미' then 1 else QTY end) ASC ) AS RNK, \n" +
         "                (case when b.status <> '4' and b.dis_yn = 'N' and b.pb_dcd != '2' then b.amt / qty else b.payback / qty end) AS PAYBACK,\n" +
         "                B.PAYBACK AS NB08_PAYBACK, \n" +
         "                (CASE WHEN A.REMARK = '2' AND B.PLI_NM IS NULL THEN '4' ELSE A.REMARK END) AS UPSELLYN,\n" +
@@ -1027,7 +1030,7 @@ import javax.persistence.*;
         "                B.DIS_RATE \n" +
         "              FROM TBCM1012 A\n" +
         "              LEFT JOIN (\n" +
-        "                          select A.MAIN_GB, A.ASSI_PROD_CD,SUBSTR(d.TABLET_PLI_GCD,3,2) AS PRODGB,d.PLI_NM ,d.COMMT,d.TABLET_PLI_DCD ,A.QTY, A.AMT, A.PAYBACK,b.STATUS,b.dis_yn,e.pb_dcd, B.DONATE_CORPSE_YN, C.DIS_RATE \n" +
+        "                          select C.PROD_MAIN_CD, A.MAIN_GB, A.ASSI_PROD_CD,SUBSTR(d.TABLET_PLI_GCD,3,2) AS PRODGB,d.PLI_NM ,d.COMMT,d.TABLET_PLI_DCD ,A.QTY, A.AMT, A.PAYBACK,b.STATUS,b.dis_yn,e.pb_dcd, B.DONATE_CORPSE_YN, C.DIS_RATE \n" +
         "                          from TBNB1008 a\n" +
         "                          left outer join tbfu1001 b on a.cert_no = b.cert_no and b.fun_ctrl_no = :functrlno \n" +
         "                          left outer join tbnb1007 c on b.cert_no = c.cert_no\n" +
@@ -1039,6 +1042,7 @@ import javax.persistence.*;
         "                AND TYPE_CD='TABLET_CODE'\n" +
         "                AND USE_YN='Y'\n" +
         "              GROUP BY\n" +
+        "                B.PROD_MAIN_CD, \n" +
         "                A.REF_ALPH,\n" +
         "                A.REF_NUM,\n" +
         "                B.PLI_NM,\n" +

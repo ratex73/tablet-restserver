@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.5,user-scalable=yes">
+<title>UbiReport Viewer</title>
+<style>
+    @font-face {
+        font-family: 'GulimChe';
+        src: local("GulimChe"),
+             url('ubi4/js/GulimChe-02.ttf') format("truetype");
+        font-style: normal;
+        font-weight: normal;
+    }
+
+    body {
+         font-family: 'GulimChe';
+    }
+</style>
+<script th:src='@{ubi4/js/ubicommon.js}'></script>
+<script th:src='@{ubi4/js/ubihtml.js}'></script>
+<script th:src='@{ubi4/js/msg.js}'></script>
+<script th:src='@{ubi4/js/ubinonax.js}'></script>
+<script th:src='@{ubi4/js/ubieform.js}'></script>
+
+<script th:inline="javascript">
+
+/*<![CDATA[*/
+var key = [[${key}]];
+var jrffile = [[${file}]];
+var arg = [[${arg}]];
+var resid =  [[${resid}]];
+ /*]]>*/
+
+
+//request.getScheme() 정보를 잘 못 가지고 온다면 아래의 변수 사용해서 호출
+var appUrl = self.location.protocol + '//' + self.location.host;
+
+var ubiHtmlViewer = null;
+var ubiParams = {
+	"appurl": appUrl
+	,"key": key 
+	,"jrffile": jrffile
+	,"arg": arg
+	,"resid":resid
+	,"scale":"PageWidth"  //너비에 맞춤
+};
+var ubiEvents ={
+	 "reportevent.previewend": ubiReportPreviwEnd
+	,"reportevent.printend": ubiReportPrintEnd
+	,"reportevent.exportend": ubiReportExportEnd
+//	,"reportevent.printClicked": ubiReportPrintClicked
+//	,"reportevent.exportClicked": ubiReportExportClicked
+//	,"eformevent.previewend": ubiEformPreviewEnd
+//	,"eformevent.saveend": ubiEformSaveEnd
+};
+
+
+function ubiStart() {
+	ubiHtmlViewer = UbiLoad(ubiParams, ubiEvents);
+}
+
+function ubiReportPreviwEnd() {
+	//console.log('ubiPreviwEnd......');
+}
+
+function ubiReportPrintEnd() {
+	//console.log('ubiReportPrintEnd......');
+}
+
+function ubiReportExportEnd() {
+	//console.log('ubiExportEnd......');
+}
+
+function ubiReportPrintClicked() {
+	//console.log('ubiReportPrintClicked......');
+}
+
+function ubiReportExportClicked() {
+	//console.log('ubiReportExportClicked......');
+}
+
+function ubiEformSaveEnd() {
+	//console.log('ubiEformSaveEnd......');
+}
+
+function ubiEformPreviewEnd() {
+	//console.log('ubiEformPreviewEnd......');
+};
+
+function ubiEformSaveEnd(file) {
+	//console.log('ubiEformSaveEnd......' + file);
+};
+
+
+</script>
+</head>
+<body onload='ubiStart()'>
+</body>
+</html>

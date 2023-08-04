@@ -111,4 +111,7 @@ public class TabletSmsEntity {
     private LocalDate sendDate;
     @CreationTimestamp
     private LocalDateTime regDateTime;
+    private String funCtrlNo;
+    private String fileType;
+    private String lastRegYn;
 }

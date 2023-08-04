@@ -25,4 +25,5 @@ public interface ProductResp extends JpaRepository<ProductEntity, String> {
 
     @Query(name = "findContractDetailList", nativeQuery = true)
     ArrayList<ContractDetailList> findContractDetailList(@Param("certNo") String certNo);
+
 }

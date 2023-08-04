@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>title</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<p><span th:text="${say}">Hi</span> Thymeleaf</p>
+<div th:text="${data.name}"></div>
+<th:block th:text="${data.date}"/>
+<img src="image/IMG_6407.jpg">
+<img th:src="@{image/IMG_6407.jpg}" />
+<img th:src="@{/image/IMG_6407.jpg}" />
+</body>
+</html>

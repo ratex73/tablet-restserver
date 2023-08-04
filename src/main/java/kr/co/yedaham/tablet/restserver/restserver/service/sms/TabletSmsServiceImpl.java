@@ -2,9 +2,11 @@ package kr.co.yedaham.tablet.restserver.restserver.service.sms;
 
 import kr.co.yedaham.tablet.restserver.restserver.config.restslack.SlackSenderManager;
 import kr.co.yedaham.tablet.restserver.restserver.config.sms.SmsProperties;
+import kr.co.yedaham.tablet.restserver.restserver.entity.FunMessageMoursEntity;
 import kr.co.yedaham.tablet.restserver.restserver.entity.SendMmsEntity;
 import kr.co.yedaham.tablet.restserver.restserver.entity.TabletSmsEntity;
 import kr.co.yedaham.tablet.restserver.restserver.model.fun.Subcontractor;
+import kr.co.yedaham.tablet.restserver.restserver.model.funmessage.FunMessageMours;
 import kr.co.yedaham.tablet.restserver.restserver.model.slack.SlackTarget;
 import kr.co.yedaham.tablet.restserver.restserver.model.sms.FunSmsPhone;
 import kr.co.yedaham.tablet.restserver.restserver.resp.sms.SendMmsEntityResp;
@@ -13,7 +15,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +44,7 @@ public class TabletSmsServiceImpl implements TabletSmsService{
             sms.setFilename(filename);
             sms.setCellPhone(phone.getCellPhone());
             sms.setSendYn('N');
+            sms.setSendDate(LocalDate.now());
             smsResp.save(sms);
             smsResp.flush();
         } catch (Exception e) {
@@ -58,6 +67,31 @@ public class TabletSmsServiceImpl implements TabletSmsService{
         }
     }
 
+    @Override
+    public void smsInsert(String filename, String functrlno, String cellPhone, String fileType) {
+        try {
+
+            TabletSmsEntity sms = new TabletSmsEntity();
+            sms.setFilename(filename);
+            sms.setCellPhone(cellPhone);
+            sms.setSendYn('Y');
+            sms.setFunCtrlNo(functrlno);
+            sms.setFileType(fileType);
+
+            List<TabletSmsEntity> tabletSmsEntityList = smsResp.findByFunCtrlNo(functrlno);
+
+            if(tabletSmsEntityList.size() > 0) {
+                for(int i=0; i<tabletSmsEntityList.size();i++) {
+                    tabletSmsEntityList.get(i).setLastRegYn("N");
+                }
+            }
+            sms.setLastRegYn("Y");
+            smsResp.save(sms);
+            smsResp.flush();
+        } catch (Exception e) {
+            slackSenderManager.send(SlackTarget.CH_BOT, "sms테스트" + e.getMessage());
+        }
+    }
 
     @Override
     public boolean sendSmsMessage(ArrayList<Subcontractor> subcontractors, String mmsMsg) {
