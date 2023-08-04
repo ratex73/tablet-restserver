@@ -49,6 +49,46 @@ public class FileUploadDownloadServiceImpl implements FileUploadDownloadService{
         }
     }
 
+    public String storeFile(MultipartFile file, String cellPhone, String fileType) {
+
+        try{
+            tabletSmsService.smsInsert(file.getOriginalFilename(), file.getOriginalFilename().substring(0,10), cellPhone, fileType);
+        } catch (Exception ex){
+            slackSenderManager.send(SlackTarget.CH_BOT, "storeFile" + ex.getMessage());
+        }
+
+        String funNumber = "";
+
+        if(StringUtils.hasText(file.getOriginalFilename())){
+            funNumber = file.getOriginalFilename().substring(0,10);
+        }
+        else
+            throw new NullPointerException(" 파일을 업로드할 디렉토리를 생성하지 못했습니다.");
+
+        Path target = Paths.get(fileLocation.toString(), funNumber);
+
+        try {
+            Files.createDirectories(target);
+        } catch (Exception e) {
+            throw new FileUploadException(" 파일을 업로드할 디렉토리를 생성하지 못했습니다.", e);
+        }
+
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+
+        try {
+            if(fileName.contains(".."))
+                throw new FileUploadException("파일명에 부적합 문자가 포함되어 있습니다." + fileName);
+
+
+            Path targetLocation = Paths.get(this.fileLocation.toString(), funNumber, fileName);
+
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            return fileName;
+        } catch (Exception e){
+            throw new FileUploadException("["+fileName+"] 파일 업로드에 실패하였습니다. 다시 시도하십시오.",e);
+        }
+    }
+
     public String storeFile(MultipartFile file, String cellPhone) {
 
 

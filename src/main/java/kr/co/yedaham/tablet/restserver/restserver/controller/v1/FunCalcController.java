@@ -5,10 +5,12 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import kr.co.yedaham.tablet.restserver.restserver.config.security.JwtTokenProvider;
+import kr.co.yedaham.tablet.restserver.restserver.model.file.FileUploadResponse;
 import kr.co.yedaham.tablet.restserver.restserver.model.funCalc.FunItemCalcDto;
 import kr.co.yedaham.tablet.restserver.restserver.model.funCalc.FunItemInfo;
 import kr.co.yedaham.tablet.restserver.restserver.model.response.CommonResult;
 import kr.co.yedaham.tablet.restserver.restserver.service.ResponseService;
+import kr.co.yedaham.tablet.restserver.restserver.service.file.FileUploadDownloadService;
 import kr.co.yedaham.tablet.restserver.restserver.service.funCalc.FunCalcService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -16,6 +18,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
 
 import java.util.List;
 
@@ -27,6 +32,8 @@ import java.util.List;
 public class FunCalcController {
     private static final Logger logger = LoggerFactory.getLogger(FunMessageController.class);
     private final FunCalcService funCalcService;
+
+    private final FileUploadDownloadService fileUploadDownloadService;
     private final ResponseService responseService;
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -91,5 +98,25 @@ public class FunCalcController {
 
         return responseService.getSingleResult(funCalcService.saveFunItemCalc(funItemCalcDto));
     }
+
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "의전정산서 이미지 업로드", notes = "서명된 의전정산서 이미지를 업로드 한다")
+    @PostMapping("/uploadSignedFunReportFile")
+    public CommonResult uploadSignedFunReportFile(@RequestParam("file") MultipartFile file, @RequestParam("cellphone") String cellPhone, @RequestParam("fileType") String fileType) {
+
+        String fileName = fileUploadDownloadService.storeFile(file);
+        String fileName1 = fileUploadDownloadService.storeFile(file, cellPhone, fileType);
+
+        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/downloadFile/")
+                .path(fileName1)
+                .toUriString();
+
+        return responseService.getSingleResult(new FileUploadResponse(fileName, fileDownloadUri, file.getContentType(), file.getSize()));
+    }
+
 }
 

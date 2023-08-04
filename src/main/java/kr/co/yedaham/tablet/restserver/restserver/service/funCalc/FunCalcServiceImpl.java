@@ -79,7 +79,7 @@ public class FunCalcServiceImpl implements FunCalcService {
                 String status = "";
 
                 if(funEntity.isPresent()) {
-                    funEntity.get().getStatus();
+                    status = funEntity.get().getStatus();
                 }
 
                 if("3".equals(status) || "4".equals(status)) {
@@ -91,7 +91,7 @@ public class FunCalcServiceImpl implements FunCalcService {
             }
 
             //신상품인 경우
-            if( prodGb == null || "new".equals(prodGb) ) {
+            if( prodGb == null || "new".equals(prodGb) || "optional".equals(prodGb)) {
                 funItemInfo.setState("");
             }
             else if("dusan".equals(prodGb)) {

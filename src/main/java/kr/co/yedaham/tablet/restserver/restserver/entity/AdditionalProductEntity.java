@@ -56,7 +56,7 @@ import javax.persistence.*;
                 "      ) B ON A.CD = B.PRODGB\n" +
                 "  LEFT OUTER JOIN TBFU1001 FU01 ON FU01.CERT_NO = :certno AND FU01.STATUS <> '4' \n" +
                 "WHERE 1=1\n" +
-                "  AND NOT EXISTS(SELECT 1 FROM TBFU1004 FU04 WHERE FU04.FUN_CTRL_NO = FU01.FUN_CTRL_NO AND FU04.ASSI_PROD_CD = B.ASSI_PROD_CD) \n" +
+                //"  AND NOT EXISTS(SELECT 1 FROM TBFU1004 FU04 WHERE FU04.FUN_CTRL_NO = FU01.FUN_CTRL_NO AND FU04.ASSI_PROD_CD = B.ASSI_PROD_CD) \n" +
                 "  AND TYPE_CD='TABLET_CODE'\n" +
                 "  AND ((A.REF_NUM IN ('10','22','23') and :amt = '-1') or USE_YN IN ('Y','1'))\n" +
                 "  AND B.SELECTGB ='Y'\n" +
@@ -428,7 +428,7 @@ import javax.persistence.*;
                 "      )B ON A.CD =  B.PRODGB\n" +
                 "        LEFT OUTER JOIN TBFU1001 FU01 ON FU01.CERT_NO = :certno \n" +
                 "      WHERE 1=1\n" +
-                "        AND NOT EXISTS(SELECT 1 FROM TBFU1004 FU04 WHERE FU04.FUN_CTRL_NO = FU01.FUN_CTRL_NO AND FU04.ASSI_PROD_CD = B.PLICD) \n" +
+                //"        AND NOT EXISTS(SELECT 1 FROM TBFU1004 FU04 WHERE FU04.FUN_CTRL_NO = FU01.FUN_CTRL_NO AND FU04.ASSI_PROD_CD = B.PLICD) \n" +
                 "        AND TYPE_CD='TABLET_CODE'\n" +
                 "        AND ((A.REF_NUM IN ('10','22','23') and :amt = '-1') or USE_YN IN ('Y'))\n" +
                 "        AND B.SELECTGB ='Y'\n" +
