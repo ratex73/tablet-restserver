@@ -142,11 +142,33 @@ public class FunMessageServiceImpl implements FunMessageService{
     public CommonResult getLastFunMessageInfo(String funCtrlNo) {
         CommonResult commonResult;
         try {
+            logger.info("####### Start getLastFunMessageInfo #######");
             ModelMapper mapper = new ModelMapper();
 
             FunMessageEntity funMessageEntity = funMessageResp.findTopByFunCtrlNoOrderBySeqDesc(funCtrlNo);
-            FunMessageInfo funMessageInfo = mapper.map(funMessageEntity, FunMessageInfo.class);
-            System.out.println("==================================> funMessageInfo : " + funMessageInfo.toString());
+            FunMessageInfo funMessageInfo;
+            logger.info("==================================> funCtrlNo : " + funCtrlNo);
+            //logger.info("==================================> funMessageEntity : " + funMessageEntity.toString());
+            if(funMessageEntity != null) {
+                funMessageInfo = mapper.map(funMessageEntity, FunMessageInfo.class);
+                FunMessageMoursEntity funMessageMoursEntity = funMessageMoursResp.findByFunCtrlNoAndFunSeqAndMainYn(funCtrlNo, funMessageInfo.getSeq(), "Y");
+
+                if(funMessageMoursEntity != null) {
+                    funMessageInfo.setMourPhone(funMessageMoursEntity.getMourReatPhone());
+                }
+                else {
+                    funMessageInfo.setMourPhone("");
+                }
+            }
+            else {
+                funMessageInfo = new FunMessageInfo();
+                funMessageInfo.setMourNm("");
+                funMessageInfo.setMourPhone("");
+                funMessageInfo.setReat("");
+            }
+
+            logger.info("==================================> funMessageInfo : " + funMessageInfo.toString());
+
             return responseService.getSingleResult(funMessageInfo);
         }catch (Exception e) {
             return  responseService.getFailResult(9999, e.getMessage());

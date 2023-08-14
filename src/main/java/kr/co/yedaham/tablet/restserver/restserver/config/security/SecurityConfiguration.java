@@ -32,7 +32,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests() // 다음 리퀘스트에 대한 사용권한 체크
                 .antMatchers("/*/signin", "/*/signin/**", "/*/signup", "/*/log", "/*/slack","/*/rsa/**",
-                        "/*/signup/**", "/*/otp/**", "/*/bugo/**").permitAll() // 가입 및 인증 주소는 누구나 접근가능
+                        "/*/signup/**", "/*/otp/**", "/*/bugo/**", "/logger.info", "/funReport/**", "/UbiServer", "/UbiServer/**", "/ubihtml", "/ubihtml/**", "/ubi4", "/ubi4/**", "/v1/saveFunReport", "/v1/saveFunReport/**", "/ubisave", "/ubisave/**").permitAll() // 가입 및 인증 주소는 누구나 접근가능
                 .antMatchers(HttpMethod.GET, "/exception/**").permitAll() // exception으로 시작하는 GET요청 리소스는 누구나 접근가능
                 .antMatchers(HttpMethod.GET, "/actuator/health").permitAll() // actuator로 시작하는 GET요청 리소스는 누구나 접근가능
                 .anyRequest().hasAnyRole("USER","ADMIN", "SUBCONTRACTOR","BRANCH_MANAGER","CENTER_MANAGER") // 그외 나머지 요청은 모두 인증된 회원만 접근 가능
