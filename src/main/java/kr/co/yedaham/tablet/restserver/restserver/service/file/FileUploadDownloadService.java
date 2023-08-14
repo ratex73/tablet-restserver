@@ -13,12 +13,12 @@ public interface FileUploadDownloadService {
     String storeFile(MultipartFile file, String cellPhone);
     String storeFile(MultipartFile file, String cellPhone, String fileType);
     Resource loadFileAsDownload(String fileName);
-    Resource loadFunnoAsDownload(String functrlno);
+    //Resource loadFunnoAsDownload(String functrlno);
+    Resource loadFunnoAsDownload(String functrlno, String fileType);
     boolean loadFunnoAsDownloadCheck(String functrlno);
     Resource loadCarAsDownload(String filename);
     boolean sendFileCustomer(MultipartFile file, String cellPhone);
     Resource loadCemeDownload(String filename);
-
     Resource loadRotateDownload(String fileDiretory, String filename);
     //boolean deleteUploadFile(String fileName);
 

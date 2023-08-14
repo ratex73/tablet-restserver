@@ -60,13 +60,13 @@ public class FileController {
     })
     @ApiOperation(value = "의전 이미지 업로드", notes = "특정 핸드폰으로 의전 이미지 업로드을 한다")
     @PostMapping("/uploadFile/phone")
-    public CommonResult uploadFilePhone(@RequestParam("file") MultipartFile[] file, @RequestParam("cellphone") String cellPhone) {
+    public CommonResult uploadFilePhone(@RequestParam("file") MultipartFile[] file, @RequestParam("cellphone") String cellPhone, @RequestParam("fileType") String fileType) {
 
         if(file.length != 2){
             throw new CUserExistException();
         }
         String fileName = serviceImpl.storeFile(file[0]);
-        String fileName1 = serviceImpl.storeFile(file[1], cellPhone);
+        String fileName1 = serviceImpl.storeFile(file[1], cellPhone, fileType);
         serviceImpl.sendFileCustomer(file[1],cellPhone);
 
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -110,8 +110,8 @@ public class FileController {
     @ApiOperation(value = "의전 이미지 업로드", notes = "특정 핸드폰으로 의전 이미지 업로드을 한다")
     @CrossOrigin(origins = {"*"})
     @GetMapping("/downloadFile/receipt1")
-    public ResponseEntity<Resource> downloadAppFile1(@RequestParam String funno, HttpServletRequest request){
-        Resource resource = serviceImpl.loadFunnoAsDownload(funno);
+    public ResponseEntity<Resource> downloadAppFile1(@RequestParam String funno, @RequestParam String fileType, HttpServletRequest request){
+        Resource resource = serviceImpl.loadFunnoAsDownload(funno, fileType);
 
         String contentType = null;
         try {

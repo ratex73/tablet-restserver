@@ -18,6 +18,8 @@
          font-family: 'GulimChe';
     }
 </style>
+
+    <link rel="stylesheet" type="text/css" th:href='@{ubi4/css/ubieform.css}' />
 <script th:src='@{ubi4/js/ubicommon.js}'></script>
 <script th:src='@{ubi4/js/ubihtml.js}'></script>
 <script th:src='@{ubi4/js/msg.js}'></script>
@@ -40,9 +42,11 @@ var appUrl = self.location.protocol + '//' + self.location.host;
 var ubiHtmlViewer = null;
 var ubiParams = {
 	"appurl": appUrl
-	,"key": key 
+	,"saveurl":"/ubisave"
+	,"key": key
 	,"jrffile": jrffile
 	,"arg": arg
+	,"isencrypt64":"false"
 	,"resid":resid
 	,"scale":"PageWidth"  //너비에 맞춤
 };

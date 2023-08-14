@@ -61,9 +61,9 @@ public class FunMessageController {
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")
     })
     @ApiOperation(value = "최종 개인정보활용 동의자 정보 조회", notes = "최종 개인정보활용 동의자 정보를 조회한다.")
-    @PostMapping(value = "/funMessage/lastInfo")
+    @GetMapping(value = "/funMessage/lastInfo")
     public CommonResult getLastFunMessageInfo(@RequestParam String funCtrlNo) throws Exception {
-
+        System.out.println("###### Controller getLastFunMessageInfo funCtrlNo : " + funCtrlNo);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CommonResult funMessageInfo = funMessageService.getLastFunMessageInfo(funCtrlNo);
         return funMessageInfo;

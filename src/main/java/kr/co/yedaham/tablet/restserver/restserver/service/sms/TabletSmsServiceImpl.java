@@ -11,7 +11,10 @@ import kr.co.yedaham.tablet.restserver.restserver.model.slack.SlackTarget;
 import kr.co.yedaham.tablet.restserver.restserver.model.sms.FunSmsPhone;
 import kr.co.yedaham.tablet.restserver.restserver.resp.sms.SendMmsEntityResp;
 import kr.co.yedaham.tablet.restserver.restserver.resp.sms.SmsResp;
+import kr.co.yedaham.tablet.restserver.restserver.service.file.FileUploadDownloadServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +30,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TabletSmsServiceImpl implements TabletSmsService{
 
+    private static final Logger logger = LoggerFactory.getLogger(TabletSmsServiceImpl.class);
     private final SmsResp smsResp;
 
     private final SlackSenderManager slackSenderManager;
@@ -71,6 +75,7 @@ public class TabletSmsServiceImpl implements TabletSmsService{
     public void smsInsert(String filename, String functrlno, String cellPhone, String fileType) {
         try {
 
+            logger.info("###### Start smsInsert #####");
             TabletSmsEntity sms = new TabletSmsEntity();
             sms.setFilename(filename);
             sms.setCellPhone(cellPhone);
@@ -78,7 +83,13 @@ public class TabletSmsServiceImpl implements TabletSmsService{
             sms.setFunCtrlNo(functrlno);
             sms.setFileType(fileType);
 
-            List<TabletSmsEntity> tabletSmsEntityList = smsResp.findByFunCtrlNo(functrlno);
+            if("".equals(fileType)) {
+                fileType = "ITEM";
+            }
+            
+            sms.setFileType(fileType);
+
+            List<TabletSmsEntity> tabletSmsEntityList = smsResp.findByFunCtrlNoAndFileType(functrlno, fileType);
 
             if(tabletSmsEntityList.size() > 0) {
                 for(int i=0; i<tabletSmsEntityList.size();i++) {
