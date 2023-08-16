@@ -6,7 +6,6 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import kr.co.yedaham.tablet.restserver.restserver.advice.exception.CUserExistException;
 import kr.co.yedaham.tablet.restserver.restserver.model.file.FileFunnoRequest;
-import kr.co.yedaham.tablet.restserver.restserver.model.file.FileSiginRequest;
 import kr.co.yedaham.tablet.restserver.restserver.model.file.FileUploadResponse;
 import kr.co.yedaham.tablet.restserver.restserver.model.response.CommonResult;
 import kr.co.yedaham.tablet.restserver.restserver.service.ResponseService;
@@ -26,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.io.IOException;
 
 @Api(tags = {"8. FileControl"})
@@ -65,7 +65,7 @@ public class FileController {
         if(file.length != 2){
             throw new CUserExistException();
         }
-        String fileName = serviceImpl.storeFile(file[0]);
+        String fileName  = serviceImpl.storeFile(file[0]);
         String fileName1 = serviceImpl.storeFile(file[1], cellPhone, fileType);
         serviceImpl.sendFileCustomer(file[1],cellPhone);
 
@@ -75,6 +75,37 @@ public class FileController {
                 .toUriString();
 
         return responseService.getSingleResult(new FileUploadResponse(fileName, fileDownloadUri, file[1].getContentType(), file[1].getSize()));
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "의전정산서 이미지 업로드", notes = "서명된 의전정산서 이미지를 업로드 한다")
+    @PostMapping("/uploadFile/uploadFunReport")
+    public CommonResult sendFunReportFile(@RequestParam("cellphone") String cellPhone, @RequestParam("functrlno") String functrlno, @RequestParam("fileName") String fileName, @RequestParam("fileType") String fileType) {
+
+        logger.info("######## Start uploadFunReport ########");
+        logger.info("######## cellphone ########" + cellPhone);
+        CommonResult commonResult = serviceImpl.storeFile(cellPhone, functrlno, fileName, fileType);
+
+        logger.info("---------------" + commonResult.getCode());
+
+        if(commonResult.getCode() == 9999) {
+            logger.info("------eeee------");
+            return commonResult;
+        }
+
+        serviceImpl.sendFileCustomer(fileName, cellPhone);
+
+        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/v1/downloadFile/")
+                .path(fileName)
+                .toUriString();
+
+        logger.info("######## End uploadFunReport ########");
+
+        return responseService.getSingleResult(new FileUploadResponse(fileName, fileDownloadUri, "", 0));
+
     }
 
     @GetMapping("/downloadFile/{fileName:.+}")

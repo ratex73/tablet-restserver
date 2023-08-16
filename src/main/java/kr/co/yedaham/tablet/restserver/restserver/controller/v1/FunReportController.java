@@ -2,16 +2,12 @@ package kr.co.yedaham.tablet.restserver.restserver.controller.v1;
 
 import com.ubireport.common.util.StrUtil;
 import com.ubireport.eform.UbiEformData;
-import com.ubireport.viewer.report.preview.UbiViewer;
 import io.swagger.annotations.Api;
-import kr.co.yedaham.tablet.restserver.restserver.model.comm.CoComSrch2Request;
+import kr.co.yedaham.tablet.restserver.restserver.config.file.FileUploadProperties;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,9 +16,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 @Api(tags = {"99. Report"})
@@ -47,8 +40,10 @@ public class FunReportController {
         return modelAndView;
     }
 */
+    private final FileUploadProperties prop;
+
     @RequestMapping(value = "/funReport")
-    public String form(Model model, String functrlno, String josonYn, String fileNm) {
+    public String form(Model model, HttpServletRequest request, String functrlno, String josonYn, String fileNm) {
 
         Random random = new Random();
 
@@ -68,12 +63,17 @@ public class FunReportController {
             file = "FSFU1007_3_1_RENEWAL_T_eform.jef";
         }
 
+        if("R".equals(josonYn)) {
+            file = "FSFU1007_3_1_RENEWAL_T_eform.jrf";
+        }
+
         if("".equals(functrlno)) {
             functrlno = "2022010063";
         }
 
         //String arg = "user#ubireport#";
-        String arg = "functrl_no#" + functrlno + "#file_nm#" + fileNm;
+        String serverHost = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+        String arg = "#functrl_no#" + functrlno + "#file_nm#" + fileNm + "#server_host#" + serverHost;
         //arg = StrUtil.encrypt64(arg,"UTF-8");
 
         String resid = "UBIHTML";
@@ -115,35 +115,11 @@ public class FunReportController {
             appPath = appPath.substring(0, appPath.lastIndexOf("/"));
         }
 
-        String savePath = "E:/uploads/" + TODAY; //pdf가 저장될 경로를 작성
-
-
-        /* 설정 정보 */
-        StringBuffer log = new StringBuffer();
-        log.append("---------------------------------------------").append(NL);
-        log.append("[ Setting Info]").append(NL);
-        log.append("---------------------------------------------").append(NL);
-        //log.append("* App URL : " + appUrl).append(NL);
-        log.append("* UbiServer URL : " + serverUrl).append(NL);
-        log.append("* App Path : " + appPath).append(NL);
-        log.append("* Save Path : " + savePath).append(NL);
-
-
-        if( useLog ) {
-            System.out.println(log.toString());
-        }
-
-        log.delete(0, log.length());
-
         UbiEformData ubiEformData = null;
         try {
 
             ubiEformData = new UbiEformData(request, response);
-
-            File fSavePath = new File(savePath);
-            if( !fSavePath.exists() ) {
-                fSavePath.mkdirs();
-            }
+            StringBuffer log = new StringBuffer();
 
             int i = 0;
             /* 아규먼트 정보 : ubiencrypt=true인 경우 아규먼트 정보처리가 안됨. 수정 필요*/
@@ -153,7 +129,7 @@ public class FunReportController {
             String[] argNames = ubiEformData.getArgumentNames();
             String reporttitle = "";
             String funCtrlNo = "";
-            String fileNm = "";
+            String fileName = "";
 
             if (argNames != null) {
                 for (i = 0; i < argNames.length; i++) {
@@ -168,16 +144,41 @@ public class FunReportController {
                     }
 
                     if(argNames[i].equals("file_nm")) {
-                        fileNm = ubiEformData.getArgument(argNames[i]);
+                        fileName = ubiEformData.getArgument(argNames[i]);
                     }
                 }
             }
             log.append(NL);
 
+            System.out.println("filePath = " + prop.getUploadDir());
+
+            String savePath = prop.getUploadDir() + "/" + funCtrlNo; //pdf가 저장될 경로를 작성
+
+            File fSavePath = new File(savePath);
+            if( !fSavePath.exists() ) {
+                fSavePath.mkdirs();
+            }
+
+            /* 설정 정보 */
+            log.append("---------------------------------------------").append(NL);
+            log.append("[ Setting Info]").append(NL);
+            log.append("---------------------------------------------").append(NL);
+            //log.append("* App URL : " + appUrl).append(NL);
+            log.append("* UbiServer URL : " + serverUrl).append(NL);
+            log.append("* App Path : " + appPath).append(NL);
+            log.append("* Save Path : " + savePath).append(NL);
+
+
+            if( useLog ) {
+                System.out.println(log.toString());
+            }
+
+            log.delete(0, log.length());
+
+
             String saveFileName = "";
-            if(!"".equals(fileNm)) {
-                //saveFileName = "funCtrlNo_" + System.currentTimeMillis() + ".pdf";
-                saveFileName = fileNm + ".pdf";
+            if(!"".equals(fileName)) {
+                saveFileName = fileName;
             }
             else {
                 saveFileName = "funCtrlNo_" + System.currentTimeMillis() + ".pdf";

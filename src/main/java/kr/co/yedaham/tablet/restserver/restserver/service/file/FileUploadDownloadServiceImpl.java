@@ -4,15 +4,13 @@ import kr.co.yedaham.tablet.restserver.restserver.advice.exception.CFileNotExist
 import kr.co.yedaham.tablet.restserver.restserver.config.file.FileUploadProperties;
 import kr.co.yedaham.tablet.restserver.restserver.config.restslack.SlackSenderManager;
 import kr.co.yedaham.tablet.restserver.restserver.config.sms.SendProperties;
-import kr.co.yedaham.tablet.restserver.restserver.controller.v1.FunMessageController;
-import kr.co.yedaham.tablet.restserver.restserver.entity.FunMessageEntity;
-import kr.co.yedaham.tablet.restserver.restserver.entity.FunSigninEntity;
 import kr.co.yedaham.tablet.restserver.restserver.model.file.FileDownloadException;
-import kr.co.yedaham.tablet.restserver.restserver.model.file.FileSiginRequest;
 import kr.co.yedaham.tablet.restserver.restserver.model.file.FileUploadException;
+import kr.co.yedaham.tablet.restserver.restserver.model.response.CommonResult;
 import kr.co.yedaham.tablet.restserver.restserver.model.slack.SlackTarget;
-import kr.co.yedaham.tablet.restserver.restserver.resp.fun.FunSigininResp;
+import kr.co.yedaham.tablet.restserver.restserver.service.ResponseService;
 import kr.co.yedaham.tablet.restserver.restserver.service.sms.TabletSmsService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,36 +20,41 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
 public class FileUploadDownloadServiceImpl implements FileUploadDownloadService{
 
     private static final Logger logger = LoggerFactory.getLogger(FileUploadDownloadServiceImpl.class);
+
     private final Path fileLocation;
     @Autowired
     private TabletSmsService tabletSmsService;
     private SlackSenderManager slackSenderManager;
+    private final ResponseService responseService;
 
     @Autowired
     private SendProperties sendProp;
 
 
 
-    public FileUploadDownloadServiceImpl(FileUploadProperties prop) {
+    public FileUploadDownloadServiceImpl(FileUploadProperties prop, ResponseService responseService) {
         this.fileLocation = Paths.get(prop.getUploadDir())
                 .toAbsolutePath().normalize();
+        this.responseService = responseService;
+
         try {
             Files.createDirectories(this.fileLocation);
         } catch (Exception e) {
             throw new FileUploadException(" 파일을 업로드할 디렉토리를 생성하지 못했습니다.", e);
         }
+    }
+
+    public Path getFileLocation() {
+        return this.fileLocation;
     }
 
     public String storeFile(MultipartFile file, String cellPhone, String fileType) {
@@ -99,7 +102,7 @@ public class FileUploadDownloadServiceImpl implements FileUploadDownloadService{
 
         try{
             logger.info("######## Start storeFile Item File ########");
-            tabletSmsService.smsInsert(file.getOriginalFilename(), file.getOriginalFilename().substring(0,10), cellPhone, "ITEM");
+            tabletSmsService.smsInsert(file.getOriginalFilename(), file.getOriginalFilename().substring(0,10), cellPhone, "");
         } catch (Exception ex){
             slackSenderManager.send(SlackTarget.CH_BOT, "storeFile" + ex.getMessage());
         }
@@ -170,6 +173,29 @@ public class FileUploadDownloadServiceImpl implements FileUploadDownloadService{
         }
     }
 
+    public CommonResult storeFile(String cellPhone, String functrlno, String fileName, String fileType) {
+
+        try{
+            logger.info("######## Start storeFile ########");
+            logger.info("fileLocation : " + this.fileLocation.toString());
+
+            Path filePath = Paths.get(this.fileLocation.toString(), functrlno, fileName);
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if(!resource.exists()) {
+                //slackSenderManager.send(SlackTarget.CH_BOT, fileName + "의전정산서 파일을 찾을 수 없습니다. 정산서 저장 후 진행하세요.");
+                return responseService.getFailResult(9999, "의전정산서 파일이 없습니다.");
+            }
+            logger.info("---------------4" );
+            tabletSmsService.smsInsert(fileName, functrlno, cellPhone, fileType);
+
+        } catch (Exception ex){
+            slackSenderManager.send(SlackTarget.CH_BOT, "storeFile" + ex.getMessage());
+        }
+
+        return responseService.getSuccessResult();
+    }
+
     public Resource loadFileAsDownload(String fileName) {
         try {
 
@@ -199,7 +225,7 @@ public class FileUploadDownloadServiceImpl implements FileUploadDownloadService{
             Set<String> fileList = new HashSet<>();
             
             if("CALC".equals(fileType)) { //의전정산서
-                containFileName = "report_fd";
+                containFileName = "report";
             }
 
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(filePath)) {
@@ -298,6 +324,19 @@ public class FileUploadDownloadServiceImpl implements FileUploadDownloadService{
               System.out.println("Exception error");
               e.printStackTrace();
          }
+        return result;
+    }
+
+    @Override
+    public boolean sendFileCustomer(String fileName, String cellPhone) {
+        boolean result = false;
+        try {
+            String mmsMsg = sendProp.getUrl() + fileName;
+            result = tabletSmsService.sendSmsMessage(cellPhone, mmsMsg);
+        }catch (Exception e) {
+            System.out.println("Exception error");
+            e.printStackTrace();
+        }
         return result;
     }
 

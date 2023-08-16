@@ -2,16 +2,13 @@ package kr.co.yedaham.tablet.restserver.restserver.service.sms;
 
 import kr.co.yedaham.tablet.restserver.restserver.config.restslack.SlackSenderManager;
 import kr.co.yedaham.tablet.restserver.restserver.config.sms.SmsProperties;
-import kr.co.yedaham.tablet.restserver.restserver.entity.FunMessageMoursEntity;
 import kr.co.yedaham.tablet.restserver.restserver.entity.SendMmsEntity;
 import kr.co.yedaham.tablet.restserver.restserver.entity.TabletSmsEntity;
 import kr.co.yedaham.tablet.restserver.restserver.model.fun.Subcontractor;
-import kr.co.yedaham.tablet.restserver.restserver.model.funmessage.FunMessageMours;
 import kr.co.yedaham.tablet.restserver.restserver.model.slack.SlackTarget;
 import kr.co.yedaham.tablet.restserver.restserver.model.sms.FunSmsPhone;
 import kr.co.yedaham.tablet.restserver.restserver.resp.sms.SendMmsEntityResp;
 import kr.co.yedaham.tablet.restserver.restserver.resp.sms.SmsResp;
-import kr.co.yedaham.tablet.restserver.restserver.service.file.FileUploadDownloadServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,12 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -59,11 +52,11 @@ public class TabletSmsServiceImpl implements TabletSmsService{
     @Override
     public void smsInsert(String filename, String functrlno, String cellPhone) {
         try {
-
             TabletSmsEntity sms = new TabletSmsEntity();
             sms.setFilename(filename);
             sms.setCellPhone(cellPhone);
             sms.setSendYn('Y');
+            sms.setSendDate(LocalDate.now());
             smsResp.save(sms);
             smsResp.flush();
         } catch (Exception e) {
@@ -80,6 +73,7 @@ public class TabletSmsServiceImpl implements TabletSmsService{
             sms.setFilename(filename);
             sms.setCellPhone(cellPhone);
             sms.setSendYn('Y');
+            sms.setSendDate(LocalDate.now());
             sms.setFunCtrlNo(functrlno);
             sms.setFileType(fileType);
 
