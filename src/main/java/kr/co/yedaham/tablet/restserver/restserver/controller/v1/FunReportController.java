@@ -4,7 +4,9 @@ import com.ubireport.common.util.StrUtil;
 import com.ubireport.eform.UbiEformData;
 import io.swagger.annotations.Api;
 import kr.co.yedaham.tablet.restserver.restserver.config.file.FileUploadProperties;
+import kr.co.yedaham.tablet.restserver.restserver.service.sms.TabletSmsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +42,10 @@ public class FunReportController {
         return modelAndView;
     }
 */
+
     private final FileUploadProperties prop;
+    @Autowired
+    private TabletSmsService tabletSmsService;
 
     @RequestMapping(value = "/funReport")
     public String form(Model model, HttpServletRequest request, String functrlno, String josonYn, String fileNm) {
@@ -56,7 +61,7 @@ public class FunReportController {
 
         //조손가정
         if("Y".equals(josonYn)) {
-            file = "FSFU1007_3_3_T.jrf";
+            file = "FSFU1007_3_3_T_eform.jef";
         }
 
         if("E".equals(josonYn)) {
@@ -71,8 +76,15 @@ public class FunReportController {
             functrlno = "2022010063";
         }
 
-        //String arg = "user#ubireport#";
-        String serverHost = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+        String scheme = request.getScheme();
+        String port = ":" + request.getServerPort();
+
+        if(request.getServerName().startsWith("mfs")) {
+            scheme = "https";
+            port = "";
+        }
+
+        String serverHost = scheme + "://" + request.getServerName() + port;
         String arg = "#functrl_no#" + functrlno + "#file_nm#" + fileNm + "#server_host#" + serverHost;
         //arg = StrUtil.encrypt64(arg,"UTF-8");
 
@@ -150,8 +162,6 @@ public class FunReportController {
             }
             log.append(NL);
 
-            System.out.println("filePath = " + prop.getUploadDir());
-
             String savePath = prop.getUploadDir() + "/" + funCtrlNo; //pdf가 저장될 경로를 작성
 
             File fSavePath = new File(savePath);
@@ -167,65 +177,75 @@ public class FunReportController {
             log.append("* UbiServer URL : " + serverUrl).append(NL);
             log.append("* App Path : " + appPath).append(NL);
             log.append("* Save Path : " + savePath).append(NL);
-
+            log.append("* filePath = " + prop.getUploadDir());
 
             if( useLog ) {
                 System.out.println(log.toString());
             }
 
             log.delete(0, log.length());
-
 
             String saveFileName = "";
-            if(!"".equals(fileName)) {
+            if("".equals(fileName) || "null".equals(fileName) || fileName == null) {
+                ubiEformData.sendError(out, "저장할 파일명 정보가 없습니다.");
+            }
+            else {
                 saveFileName = fileName;
-            }
-            else {
-                saveFileName = "funCtrlNo_" + System.currentTimeMillis() + ".pdf";
                 //saveFileName = reporttitle + ".pdf";
-            }
-            String saveFullPath = savePath + "/" + saveFileName;
 
-            /* 사용자 입력 정보 */
-            log.append("---------------------------------------------").append(NL);
-            log.append("[ Input Info ]").append(NL);
-            log.append("---------------------------------------------").append(NL);
-            String[] columnNames = ubiEformData.getParameterNames();
+                String saveFullPath = savePath + "/" + saveFileName;
 
-            if (columnNames != null) {
-                for (i = 0; i < columnNames.length; i++) {
-                    log.append(columnNames[i] + " = " + ubiEformData.getParameter(columnNames[i])).append(NL);
+                /* 사용자 입력 정보 */
+                log.append("---------------------------------------------").append(NL);
+                log.append("[ Input Info ]").append(NL);
+                log.append("---------------------------------------------").append(NL);
+                String[] columnNames = ubiEformData.getParameterNames();
+
+                if (columnNames != null) {
+                    for (i = 0; i < columnNames.length; i++) {
+                        log.append(columnNames[i] + " = " + ubiEformData.getParameter(columnNames[i])).append(NL);
+                    }
                 }
-            }
 
-            if( useLog ) {
+                if( useLog ) {
+                    System.out.println(log.toString());
+                }
+
+                log.delete(0, log.length());
+
+                // 파일 생성
+                boolean saveResult = ubiEformData.saveFile(UbiEformData.PDF, saveFullPath);
+
+                /* 파일 저장 결과 정보 */
+                log.append("---------------------------------------------").append(NL);
+                log.append("* Save File Name : " + saveFileName).append(NL);
+                log.append("* Save Full Path : " + saveFullPath).append(NL);
+                log.append("[ File Save Result : " + (saveResult?"Success!":"Fail!") + " ]").append(NL);
+                log.append("---------------------------------------------").append(NL);
+
                 System.out.println(log.toString());
+                log.delete(0, log.length());
+
+                String[] paramNames = ubiEformData.getParameterNames();
+
+                int idx = 0;
+                for(String paramName : paramNames) {
+                    System.out.println("paramName : " + paramName);
+                    System.out.println("paramValue : " + ubiEformData.getParameter(paramName));
+                }
+
+                if( saveResult ) {
+                    ubiEformData.sendSuccess(out, "FILENAME#" + saveFullPath);
+                    isSuccess = true;
+
+                    //tabletSmsService.smsInsert("111", "2022007007", "00000000000", "CALC");
+                    //FileUploadProperties
+                }
+                else {
+                    ubiEformData.sendError(out, "파일 저장 오류");
+                }
+                out.flush();
             }
-
-            log.delete(0, log.length());
-
-            // 파일 생성
-            boolean saveResult = ubiEformData.saveFile(UbiEformData.PDF, saveFullPath);
-
-            /* 파일 저장 결과 정보 */
-            log.append("---------------------------------------------").append(NL);
-            log.append("* Save File Name : " + saveFileName).append(NL);
-            log.append("* Save Full Path : " + saveFullPath).append(NL);
-            log.append("[ File Save Result : " + (saveResult?"Success!":"Fail!") + " ]").append(NL);
-            log.append("---------------------------------------------").append(NL);
-
-            System.out.println(log.toString());
-            log.delete(0, log.length());
-
-
-            if( saveResult ) {
-                ubiEformData.sendSuccess(out, "FILENAME#" + saveFullPath);
-                isSuccess = true;
-            }
-            else {
-                ubiEformData.sendError(out, "파일 저장 오류");
-            }
-            out.flush();
         }
         catch (Exception e) {
             e.printStackTrace();

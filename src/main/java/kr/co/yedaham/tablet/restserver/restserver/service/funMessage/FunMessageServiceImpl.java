@@ -2,6 +2,7 @@ package kr.co.yedaham.tablet.restserver.restserver.service.funMessage;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.core.instrument.util.StringUtils;
 import kr.co.yedaham.tablet.restserver.restserver.config.restslack.SlackSenderManager;
 import kr.co.yedaham.tablet.restserver.restserver.config.sms.SendProperties;
 import kr.co.yedaham.tablet.restserver.restserver.config.sms.SmsProperties;
@@ -185,6 +186,8 @@ public class FunMessageServiceImpl implements FunMessageService{
 
         List<FunMessageInfo> chekcedFunMessageInfos = checkOverLapFunMessageInfoList(saveInfo);
 
+        //logger.info("==================================> saveFunMessageInfo : chekcedFunMessageInfos.size() : " + chekcedFunMessageInfos.size());
+
         for(int i =0; i < chekcedFunMessageInfos.size(); i++) {
             int nextValMySequence = funMessageResp.getNextValMySequence();
             chekcedFunMessageInfos.get(i).setSeq(nextValMySequence);
@@ -247,8 +250,17 @@ public class FunMessageServiceImpl implements FunMessageService{
         funMessageInfoList.addAll(saveInfo);
         List<FunMessageMoursEntity> existFunMessageMoursList = funMessageMoursResp.findByFunCtrlNo(saveInfo.get(0).getFunCtrlNo());
 
+        //logger.info("==================================> checkOverLapFunMessageInfoList : existFunMessageMoursList.size() : " + existFunMessageMoursList.size());
+
         if(existFunMessageMoursList.size() > 0) {
             for(int i=0; i<saveInfo.size();i++) {
+                
+                //의전번호가 공백이거나 null 이면 대상건에서 제외
+                if( "".equals(saveInfo.get(i).getFunCtrlNo()) || saveInfo.get(i).getFunCtrlNo() == null ) {
+                    funMessageInfoList.remove(saveInfo.get(i));
+                    continue;
+                }
+                
                 for(int j=0;j<existFunMessageMoursList.size();j++) {
                     if( (saveInfo.get(i).getMourNm().equals(existFunMessageMoursList.get(j).getMourReatNm())) &&
                             (saveInfo.get(i).getMourPhone().equals(existFunMessageMoursList.get(j).getMourReatPhone()))

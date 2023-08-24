@@ -157,13 +157,13 @@ public class FunCalcController {
         String exportFilePath = "E:/uploads/" + exportFileName;
 
 
-        System.out.println("[appUrl] " + appUrl);
-        System.out.println("[appPath] " + appPath);
-        System.out.println("[jrfDir] " + jrfDir);
-        System.out.println("[jrf] " + jrf);
-        System.out.println("[arg] " + arg);
-        System.out.println("[type] " + exportFileType);
-        System.out.println("[exportDir] " + exportFilePath);
+        logger.info("[appUrl] " + appUrl);
+        logger.info("[appPath] " + appPath);
+        logger.info("[jrfDir] " + jrfDir);
+        logger.info("[jrf] " + jrf);
+        logger.info("[arg] " + arg);
+        logger.info("[type] " + exportFileType);
+        logger.info("[exportDir] " + exportFilePath);
 
 
         try {
@@ -194,12 +194,42 @@ public class FunCalcController {
         }
         finally {
             if(isSuccess){
-                System.out.println("File Export Success");
+                logger.info("File Export Success");
             } else{
-                System.out.println("File Export Fail");
+                logger.info("File Export Fail");
             }
         }
 
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "의전정산서 파일 전송가능여부", notes = "최종 의전정산서파일 전송 가능여부를 확인한다.")
+    @GetMapping("/funCalc/getFunReportSendYn")
+    public CommonResult funReportSendYn(@RequestParam("functrlno") String functrlno, @RequestParam("fileType") String fileType) {
+
+        logger.info("######## Start funReportSendYn ########");
+        String sendYn = funCalcService.funReportSendYn(functrlno, fileType);
+
+        logger.info("sendYn : " + sendYn);
+        logger.info("######## End funReportSendYn ########");
+        return responseService.getSingleResult(sendYn);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "의전 관련 파일명 조회", notes = "상품설명서, 의전정산서 등 파일명을 조회한다.")
+    @GetMapping("/funCalc/getFunFileName")
+    public CommonResult getFunFileName(@RequestParam("functrlno") String functrlno, @RequestParam("fileType") String fileType) {
+
+        logger.info("######## Start funReportSendYn ########");
+        String sendYn = funCalcService.getFunFileName(functrlno, fileType);
+
+        logger.info("sendYn : " + sendYn);
+        logger.info("######## End funReportSendYn ########");
+        return responseService.getSingleResult(sendYn);
     }
 
 }

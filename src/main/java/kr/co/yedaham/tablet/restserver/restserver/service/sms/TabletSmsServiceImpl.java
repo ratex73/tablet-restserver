@@ -21,7 +21,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class TabletSmsServiceImpl implements TabletSmsService{
+public class TabletSmsServiceImpl implements TabletSmsService {
 
     private static final Logger logger = LoggerFactory.getLogger(TabletSmsServiceImpl.class);
     private final SmsResp smsResp;
@@ -77,16 +77,16 @@ public class TabletSmsServiceImpl implements TabletSmsService{
             sms.setFunCtrlNo(functrlno);
             sms.setFileType(fileType);
 
-            if("".equals(fileType)) {
+            if ("".equals(fileType)) {
                 fileType = "ITEM";
             }
-            
+
             sms.setFileType(fileType);
 
             List<TabletSmsEntity> tabletSmsEntityList = smsResp.findByFunCtrlNoAndFileType(functrlno, fileType);
 
-            if(tabletSmsEntityList.size() > 0) {
-                for(int i=0; i<tabletSmsEntityList.size();i++) {
+            if (tabletSmsEntityList.size() > 0) {
+                for (int i = 0; i < tabletSmsEntityList.size(); i++) {
                     tabletSmsEntityList.get(i).setLastRegYn("N");
                 }
             }
@@ -104,14 +104,14 @@ public class TabletSmsServiceImpl implements TabletSmsService{
         String sendTelNo = smsProp.getTelNo();
         //String nextValEtc = sendMmsEntityResp.getNextValEtcSequence();
 
-        for (Subcontractor subcontractor :subcontractors) {
-            if("T".equals(sendMsgkey)) {
+        for (Subcontractor subcontractor : subcontractors) {
+            if ("T".equals(sendMsgkey)) {
 
                 subcontractor.setCellphone(sendTelNo);
             }
             sendMmsEntityResp.save(
                     SendMmsEntity.builder().
-                            msgKey(sendMsgkey+sendMmsEntityResp.getNextValMySequence()).
+                            msgKey(sendMsgkey + sendMmsEntityResp.getNextValMySequence()).
                             calleeNo(subcontractor.getCellphone()).
                             callbackNo("15666644").
                             mmsMsg(mmsMsg).
@@ -127,13 +127,13 @@ public class TabletSmsServiceImpl implements TabletSmsService{
         String sendMsgkey = smsProp.getMsgkey();
         String sendTelNo = smsProp.getTelNo();
 
-        if("T".equals(sendMsgkey)) {
+        if ("T".equals(sendMsgkey)) {
             cellPhone = sendTelNo;
         }
 
         sendMmsEntityResp.save(
                 SendMmsEntity.builder().
-                        msgKey(sendMsgkey+sendMmsEntityResp.getNextValMySequence()).
+                        msgKey(sendMsgkey + sendMmsEntityResp.getNextValMySequence()).
                         calleeNo(cellPhone).
                         callbackNo("15666644").
                         mmsMsg(mmsMsg).
@@ -147,13 +147,13 @@ public class TabletSmsServiceImpl implements TabletSmsService{
         String sendMsgkey = smsProp.getMsgkey();
         String sendTelNo = smsProp.getTelNo();
 
-        if("T".equals(sendMsgkey)) {
+        if ("T".equals(sendMsgkey)) {
             cellPhone = sendTelNo;
         }
 
         sendMmsEntityResp.save(
                 SendMmsEntity.builder().
-                        msgKey(sendMsgkey+sendMmsEntityResp.getNextValMySequence()).
+                        msgKey(sendMsgkey + sendMmsEntityResp.getNextValMySequence()).
                         calleeNo(cellPhone).
                         callbackNo("15666644").
                         mmsMsg(mmsMsg).
@@ -167,17 +167,17 @@ public class TabletSmsServiceImpl implements TabletSmsService{
         String sendMsgkey = smsProp.getMsgkey();
         String sendTelNo = smsProp.getTelNo();
 
-        if("T".equals(sendMsgkey)) {
+        if ("T".equals(sendMsgkey)) {
             cellPhone = sendTelNo;
         }
-           sendMmsEntityResp.save(
-                            SendMmsEntity.builder().
-                                    msgKey(sendMsgkey+sendMmsEntityResp.getNextValMySequence()).
-                                    calleeNo(cellPhone).
-                                    callbackNo("15666644").
-                                    mmsMsg(mmsMsg).
-                                    msgtype('S').
-                                    build());
+        sendMmsEntityResp.save(
+                SendMmsEntity.builder().
+                        msgKey(sendMsgkey + sendMmsEntityResp.getNextValMySequence()).
+                        calleeNo(cellPhone).
+                        callbackNo("15666644").
+                        mmsMsg(mmsMsg).
+                        msgtype('S').
+                        build());
         return true;
     }
 

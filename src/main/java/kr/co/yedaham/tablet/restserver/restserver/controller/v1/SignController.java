@@ -56,7 +56,7 @@ public class SignController {
     @PostMapping(value = "/signin")
     public CommonResult signin(@RequestBody SignUserRequest request, @RequestHeader String DeviceType,@RequestHeader String deviceAppVersion, @RequestHeader String deviceId) throws Exception {
         if(DeviceType != null && !(DeviceType.equals("SM-T505N") || DeviceType.equals("SM-T720") || DeviceType.equals("SM-T725N") || DeviceType.equals("SM-T500")  || DeviceType.equals("SM-T875N")
-                                || DeviceType.equals("SM-T735N") || DeviceType.equals("SM-T515N")) ) {
+                                || DeviceType.equals("SM-T735N") || DeviceType.equals("SM-T515N") || DeviceType.equals("SM-X200") || DeviceType.equals("SM-X900")) ) {
             slackSenderManager.send(CH_BOT, request.getId() + ":" + DeviceType+":비인가 디바이스로 접속하였습니다.");
             throw new CUseridSigninFailedException();
         }

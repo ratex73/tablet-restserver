@@ -22,5 +22,7 @@ public interface FunMessageMoursResp extends JpaRepository<FunMessageMoursEntity
 
     public List<FunMessageMoursEntity> findByFunCtrlNoAndDeadReatAndFunSeq(@Param("funCtrlNo") String funCtrlNo,@Param("deadReat") String deadReat,@Param("seq") long seq);
 
+    public FunMessageMoursEntity findByFunCtrlNoAndFunSeqAndMainYn(@Param("funCtrlNo") String funCtrlNo, @Param("seq") long seq, @Param("mainYn") String mainYn);
+
 
 }

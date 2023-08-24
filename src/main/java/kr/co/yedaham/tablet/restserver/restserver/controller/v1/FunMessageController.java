@@ -76,6 +76,7 @@ public class FunMessageController {
     @ApiOperation(value = "부고문자 저장", notes = "부고문자를 저장한다")
     @PostMapping(value = "/funMessage/save")
     public CommonResult funMessageSave (@RequestBody List<FunMessageInfo> funMessageInfos) throws Exception {
+        System.out.println("########### /funMessage/save,  FunMessageController.funMessageSave" );
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return responseService.getListResult(funMessageService.saveFunMessageInfo(funMessageInfos));
     }
@@ -86,6 +87,7 @@ public class FunMessageController {
     @ApiOperation(value = "부고문자 상주들 저장", notes = "부고문자 상주들 저장한다")
     @PostMapping(value = "/funMessage/save/mours")
     public CommonResult funMessageSaveMours (@RequestBody List<FunMessageMours> funMessageMours) throws Exception {
+        System.out.println("########### /funMessage/save/mours, FunMessageController.funMessageSaveMours" );
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return responseService.getListResult(funMessageService.saveFunMessageMours(funMessageMours));
     }

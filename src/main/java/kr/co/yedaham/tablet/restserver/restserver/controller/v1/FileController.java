@@ -65,6 +65,9 @@ public class FileController {
         if(file.length != 2){
             throw new CUserExistException();
         }
+
+        logger.info("=======> /uploadFile/phone, cellphone : " + cellPhone);
+
         String fileName  = serviceImpl.storeFile(file[0]);
         String fileName1 = serviceImpl.storeFile(file[1], cellPhone, fileType);
         serviceImpl.sendFileCustomer(file[1],cellPhone);
@@ -88,10 +91,10 @@ public class FileController {
         logger.info("######## cellphone ########" + cellPhone);
         CommonResult commonResult = serviceImpl.storeFile(cellPhone, functrlno, fileName, fileType);
 
+        logger.info("-----fileName----------" + fileName);
         logger.info("---------------" + commonResult.getCode());
 
         if(commonResult.getCode() == 9999) {
-            logger.info("------eeee------");
             return commonResult;
         }
 
@@ -123,6 +126,8 @@ public class FileController {
             contentType = "application/octet-stream";
         }
 
+        logger.info("contentType : " + contentType);
+
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
@@ -144,7 +149,17 @@ public class FileController {
     public ResponseEntity<Resource> downloadAppFile1(@RequestParam String funno, @RequestParam String fileType, HttpServletRequest request){
         Resource resource = serviceImpl.loadFunnoAsDownload(funno, fileType);
 
+        if(resource == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
         String contentType = null;
+        MediaType mediaType = MediaType.IMAGE_JPEG;
+
+        if("CALC".equals(fileType)) {
+            mediaType = MediaType.APPLICATION_PDF;
+        }
+
         try {
             contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
         } catch (IOException ex) {
@@ -156,7 +171,7 @@ public class FileController {
         }
 
         return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_JPEG)
+                .contentType(mediaType)
                 .body(resource);
     }
 

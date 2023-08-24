@@ -9,6 +9,7 @@ import kr.co.yedaham.tablet.restserver.restserver.resp.funCalc.FunCalcResp;
 import kr.co.yedaham.tablet.restserver.restserver.resp.funCalc.FunCareItemResp;
 import kr.co.yedaham.tablet.restserver.restserver.resp.funCalc.FunItemResp;
 import kr.co.yedaham.tablet.restserver.restserver.resp.contractamt.ContractAmtResp;
+import kr.co.yedaham.tablet.restserver.restserver.resp.sms.SmsResp;
 import kr.co.yedaham.tablet.restserver.restserver.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -29,10 +30,9 @@ public class FunCalcServiceImpl implements FunCalcService {
     private final FunItemResp funItemResp;
     private final FunCalcResp funCalcResp;
     private final FunCareItemResp funCareItemResp;
-
     private final ContractAmtResp contractAmtResp;
     private final ResponseService responseService;
-
+    private final SmsResp smsResp;
     private final FunResp funResp;
 
     //의전물품 저장
@@ -239,5 +239,38 @@ public class FunCalcServiceImpl implements FunCalcService {
         logger.info("######################### saveFunItemCalc Result End #########################");
 
         return responseService.getSuccessResult();
+    }
+
+    //의전정산서 문자 전송 가능여부
+    public String funReportSendYn(String functrlno, String fileType) {
+        String sendYn = "N";
+        TabletSmsEntity tabletSmsEntity = smsResp.findTopByFunCtrlNoAndFileTypeAndLastRegYn(functrlno, fileType, "Y");
+
+        logger.info("======" + tabletSmsEntity);
+
+        if(tabletSmsEntity != null) {
+            if (!"".equals(tabletSmsEntity.getFunCtrlNo()) && tabletSmsEntity.getFunCtrlNo() != null) {
+                sendYn = "Y";
+            }
+        }
+        logger.info("sendYn" + sendYn);
+        return sendYn;
+    }
+
+
+    //의전 파일명 조회
+    public String getFunFileName(String functrlno, String fileType) {
+        String fileName = "";
+        TabletSmsEntity tabletSmsEntity = smsResp.findTopByFunCtrlNoAndFileTypeAndLastRegYn(functrlno, fileType, "Y");
+
+        logger.info("======" + tabletSmsEntity);
+
+        if(tabletSmsEntity != null) {
+            if (!"".equals(tabletSmsEntity.getFunCtrlNo()) && tabletSmsEntity.getFunCtrlNo() != null) {
+                fileName = tabletSmsEntity.getFilename();
+            }
+        }
+        logger.info("fileName" + fileName);
+        return fileName;
     }
 }

@@ -4,13 +4,20 @@ import kr.co.yedaham.tablet.restserver.restserver.advice.exception.CFileNotExist
 import kr.co.yedaham.tablet.restserver.restserver.config.file.FileUploadProperties;
 import kr.co.yedaham.tablet.restserver.restserver.config.restslack.SlackSenderManager;
 import kr.co.yedaham.tablet.restserver.restserver.config.sms.SendProperties;
+import kr.co.yedaham.tablet.restserver.restserver.entity.FunEntity;
+import kr.co.yedaham.tablet.restserver.restserver.entity.TabletSmsEntity;
 import kr.co.yedaham.tablet.restserver.restserver.model.file.FileDownloadException;
 import kr.co.yedaham.tablet.restserver.restserver.model.file.FileUploadException;
+import kr.co.yedaham.tablet.restserver.restserver.model.funmessage.FunMessageInfo;
 import kr.co.yedaham.tablet.restserver.restserver.model.response.CommonResult;
 import kr.co.yedaham.tablet.restserver.restserver.model.slack.SlackTarget;
+import kr.co.yedaham.tablet.restserver.restserver.resp.sms.SmsResp;
 import kr.co.yedaham.tablet.restserver.restserver.service.ResponseService;
 import kr.co.yedaham.tablet.restserver.restserver.service.sms.TabletSmsService;
+import kr.co.yedaham.tablet.restserver.restserver.resp.sms.SmsResp;
 
+
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +40,12 @@ public class FileUploadDownloadServiceImpl implements FileUploadDownloadService{
     private final Path fileLocation;
     @Autowired
     private TabletSmsService tabletSmsService;
+    @Autowired
+    private SmsResp smsResp;
     private SlackSenderManager slackSenderManager;
     private final ResponseService responseService;
+
+
 
     @Autowired
     private SendProperties sendProp;
@@ -184,9 +195,9 @@ public class FileUploadDownloadServiceImpl implements FileUploadDownloadService{
 
             if(!resource.exists()) {
                 //slackSenderManager.send(SlackTarget.CH_BOT, fileName + "의전정산서 파일을 찾을 수 없습니다. 정산서 저장 후 진행하세요.");
-                return responseService.getFailResult(9999, "의전정산서 파일이 없습니다.");
+                return responseService.getFailResult(9999, "의전정산서 파일을 찾을 수 없습니다. 정산서 저장 후 진행하세요.");
             }
-            logger.info("---------------4" );
+
             tabletSmsService.smsInsert(fileName, functrlno, cellPhone, fileType);
 
         } catch (Exception ex){
@@ -220,25 +231,43 @@ public class FileUploadDownloadServiceImpl implements FileUploadDownloadService{
         try {
             Path filePath = Paths.get(this.fileLocation.toString(), functrlno);
             String fileName = "";
+            String lastFileName = "";
             String containFileName = "encrypt";
             
             Set<String> fileList = new HashSet<>();
             
-            if("CALC".equals(fileType)) { //의전정산서
-                containFileName = "report";
-            }
+            //if("CALC".equals(fileType)) { //의전정산서
+                TabletSmsEntity tabletSmsEntity = smsResp.findTopByFunCtrlNoAndFileTypeAndLastRegYn(functrlno, fileType, "Y");
+                logger.info("======tabletSmsEntity : " + tabletSmsEntity);
+
+                if(tabletSmsEntity != null) {
+                    if ("".equals(tabletSmsEntity.getFunCtrlNo()) || tabletSmsEntity.getFunCtrlNo() == null) {
+                        return null;
+                    }
+                    lastFileName = tabletSmsEntity.getFilename();
+                }
+                else {
+                    return null;
+                }
+            //}
+            logger.info("======lastFileName : " + lastFileName);
 
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(filePath)) {
                 for (Path path : stream) {
                     if (!Files.isDirectory(path)) {
-                        if(path.getFileName().toString().contains(containFileName))
-                            continue;
-                        fileName = path.getFileName().toString();
-                        fileList.add(path.getFileName()
-                                .toString());
+                        //if(path.getFileName().toString().contains(containFileName))
+                        //    continue;
+                        if(path.getFileName().toString().equals(lastFileName)) {
+                            fileName = path.getFileName().toString();
+                            fileList.add(path.getFileName()
+                                    .toString());
+                            break;
+                        }
                     }
                 }
             }
+
+            logger.info("======fileName : " + fileName);
 
             Path filePath1 = Paths.get(this.fileLocation.toString(), functrlno, fileName);
 
